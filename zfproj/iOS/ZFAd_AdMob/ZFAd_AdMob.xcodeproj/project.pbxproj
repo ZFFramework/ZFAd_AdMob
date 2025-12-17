@@ -1,0 +1,412 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		62B7B3B7FF914A9E523C5A2C068E09D3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49030AB5DC535C80F339E6B4B5517923 /* Foundation.framework */; };
+		DB30DF12CEBE6BEE33A550E57E217FB5 /* zfgensrc_ZFAd_AdMob.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5A9C5C69B7EC7865695358239192BEC2 /* zfgensrc_ZFAd_AdMob.mm */; };
+		DFEE82718C14FE25A198B82C9CB96071 /* Pods_ZFAd_AdMob.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F00121C8710D0F245B9EBC4C4AAE59C /* Pods_ZFAd_AdMob.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7A3C05BEA75169C71C1D8D50A44F92F6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		49030AB5DC535C80F339E6B4B5517923 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5A9C5C69B7EC7865695358239192BEC2 /* zfgensrc_ZFAd_AdMob.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = zfgensrc_ZFAd_AdMob.mm; sourceTree = "<group>"; };
+		5F0463E94DC44D6E19EA8E7F440BA03D /* zfsrc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = zfsrc; path = ../../../zfsrc; sourceTree = "<group>"; };
+		91A4C47263D9787B33740D654733F58E /* Pods-ZFAd_AdMob.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZFAd_AdMob.debug.xcconfig"; path = "Target Support Files/Pods-ZFAd_AdMob/Pods-ZFAd_AdMob.debug.xcconfig"; sourceTree = "<group>"; };
+		9CCBBB03A0AE80582EAA1CC3A6606DFF /* libZFAd_AdMob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZFAd_AdMob.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F00121C8710D0F245B9EBC4C4AAE59C /* Pods_ZFAd_AdMob.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZFAd_AdMob.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D342CCFE528C6E4AF215226DF345BA54 /* Pods-ZFAd_AdMob.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZFAd_AdMob.release.xcconfig"; path = "Target Support Files/Pods-ZFAd_AdMob/Pods-ZFAd_AdMob.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		512813E6CAC7B05CB856C0A56761A0D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				62B7B3B7FF914A9E523C5A2C068E09D3 /* Foundation.framework in Frameworks */,
+				DFEE82718C14FE25A198B82C9CB96071 /* Pods_ZFAd_AdMob.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		22092699E9B41681FEBD7828767CD850 /* ProjectFiles */ = {
+			isa = PBXGroup;
+			children = (
+				5A9C5C69B7EC7865695358239192BEC2 /* zfgensrc_ZFAd_AdMob.mm */,
+			);
+			path = ProjectFiles;
+			sourceTree = "<group>";
+		};
+		281B2D280A1D5DB4ED4F48D0BC32AD1B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9CCBBB03A0AE80582EAA1CC3A6606DFF /* libZFAd_AdMob.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2F828688368D831A72D974D41BD4E4A6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				91A4C47263D9787B33740D654733F58E /* Pods-ZFAd_AdMob.debug.xcconfig */,
+				D342CCFE528C6E4AF215226DF345BA54 /* Pods-ZFAd_AdMob.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		40C2A4AA0C82C91B70C086A3BB2FA4F5 = {
+			isa = PBXGroup;
+			children = (
+				BD81B1A0BC11ABD4888827F8EB31374C /* Frameworks */,
+				2F828688368D831A72D974D41BD4E4A6 /* Pods */,
+				281B2D280A1D5DB4ED4F48D0BC32AD1B /* Products */,
+				22092699E9B41681FEBD7828767CD850 /* ProjectFiles */,
+				898B1846452ABBA8942917F628A4E30D /* ZFAd_AdMob */,
+			);
+			sourceTree = "<group>";
+		};
+		898B1846452ABBA8942917F628A4E30D /* ZFAd_AdMob */ = {
+			isa = PBXGroup;
+			children = (
+				5F0463E94DC44D6E19EA8E7F440BA03D /* zfsrc */,
+			);
+			name = ZFAd_AdMob;
+			sourceTree = "<group>";
+		};
+		BD81B1A0BC11ABD4888827F8EB31374C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49030AB5DC535C80F339E6B4B5517923 /* Foundation.framework */,
+				9F00121C8710D0F245B9EBC4C4AAE59C /* Pods_ZFAd_AdMob.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		48039F9E7A1D60AC29B6DB55CD0072FF /* ZFAd_AdMob */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8C58368176254484A2A6F62315435D1F /* Build configuration list for PBXNativeTarget "ZFAd_AdMob" */;
+			buildPhases = (
+				CAFE01219CE7F9435FF00BEF51A1CD9C /* [CP] Check Pods Manifest.lock */,
+				36FE7332A22A1CE42E9CBD2A33E1AB34 /* ZFCompileSource */,
+				C26B76B5C39E859A7F3552611F207B03 /* Sources */,
+				512813E6CAC7B05CB856C0A56761A0D1 /* Frameworks */,
+				7A3C05BEA75169C71C1D8D50A44F92F6 /* CopyFiles */,
+				D7683E961A6CB7E29C8981C622E20492 /* ZFUniqueProj */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZFAd_AdMob;
+			productName = ZFAd_AdMob;
+			productReference = 9CCBBB03A0AE80582EAA1CC3A6606DFF /* libZFAd_AdMob.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8E988233AEA79CB8EC1E67BF8742DD05 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = ZFFramework;
+				TargetAttributes = {
+					48039F9E7A1D60AC29B6DB55CD0072FF = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2C830E83BDCCCBE51815B587314D2AFB /* Build configuration list for PBXProject "ZFAd_AdMob" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 40C2A4AA0C82C91B70C086A3BB2FA4F5;
+			productRefGroup = 281B2D280A1D5DB4ED4F48D0BC32AD1B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				48039F9E7A1D60AC29B6DB55CD0072FF /* ZFAd_AdMob */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		36FE7332A22A1CE42E9CBD2A33E1AB34 /* ZFCompileSource */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = ZFCompileSource;
+			outputPaths = (
+				"$(SRCROOT)/ProjectFiles/zfgensrc_ZFAd_AdMob.mm",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "sh ${SRCROOT}/../../../../../../ZFFramework/tools/common/unity_build.sh \"${SRCROOT}/ProjectFiles/zfgensrc_ZFAd_AdMob.mm\" \"${SRCROOT}/../../../zfsrc\"";
+		};
+		CAFE01219CE7F9435FF00BEF51A1CD9C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ZFAd_AdMob-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D7683E961A6CB7E29C8981C622E20492 /* ZFUniqueProj */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = ZFUniqueProj;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "sh ${SRCROOT}/../../../../../../ZFFramework/tools/spec/iOS/unique_proj.sh \"${SRCROOT}/${PROJECT_NAME}.xcodeproj\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C26B76B5C39E859A7F3552611F207B03 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB30DF12CEBE6BEE33A550E57E217FB5 /* zfgensrc_ZFAd_AdMob.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		17C736D24E202858253759CBFC1F859C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91A4C47263D9787B33740D654733F58E /* Pods-ZFAd_AdMob.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Objc",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${SRCROOT}/../../../zfsrc",
+					"${SRCROOT}/../../../../../../ZFFramework/_release/iOS/all/include",
+				);
+				WARNING_CFLAGS = "-Wpartial-availability";
+			};
+			name = Debug;
+		};
+		3DF5AFA09246F7FA4D9DC4760026A1E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8360C2CF5154C7349CE09E5FA9449DC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+			};
+			name = Debug;
+		};
+		9DE4D01DE968E89C1C16570AF33472FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D342CCFE528C6E4AF215226DF345BA54 /* Pods-ZFAd_AdMob.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Objc",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${SRCROOT}/../../../zfsrc",
+					"${SRCROOT}/../../../../../../ZFFramework/_release/iOS/all/include",
+				);
+				WARNING_CFLAGS = "-Wpartial-availability";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2C830E83BDCCCBE51815B587314D2AFB /* Build configuration list for PBXProject "ZFAd_AdMob" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8360C2CF5154C7349CE09E5FA9449DC6 /* Debug */,
+				3DF5AFA09246F7FA4D9DC4760026A1E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8C58368176254484A2A6F62315435D1F /* Build configuration list for PBXNativeTarget "ZFAd_AdMob" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17C736D24E202858253759CBFC1F859C /* Debug */,
+				9DE4D01DE968E89C1C16570AF33472FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8E988233AEA79CB8EC1E67BF8742DD05 /* Project object */;
+}

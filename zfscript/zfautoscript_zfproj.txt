@@ -1,0 +1,14 @@
+ZF_NAME = ZFAd_AdMob
+ZF_TYPE = impl
+
+ZF_OUTPUT = ..
+ZF_INPLACE = 1
+ZF_INPLACE_SRC = ZFFramework/ZFModule/$ZF_NAME
+
+ZF_LIB += ZFCore
+ZF_LIB += ZFUIKit
+
+ZF_IMPL += ZF_impl
+
+ZF_LIB_EXT += https://github.com/ZFFramework/ZFAd
+
