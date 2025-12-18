@@ -1,11 +1,12 @@
 package com.ZFFramework.ZFAd_AdMob;
 
+import android.app.Activity;
+
 import androidx.annotation.NonNull;
 
 import com.ZFFramework.NativeUtil.ZFRunnable;
 import com.ZFFramework.NativeUtil.ZFString;
 import com.ZFFramework.NativeUtil.ZFTaskId;
-import com.ZFFramework.ZFUIKit_impl.ZFUIRootWindow;
 import com.ZFFramework.ZF_impl.ZFResultType;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
@@ -60,7 +61,7 @@ public class ZFAdForSplash {
     public static void native_nativeAdStart(Object nativeAd, Object window) {
         ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
         nativeAdTmp._nativeAdStarted = true;
-        nativeAdTmp._window = new WeakReference<>((ZFUIRootWindow) window);
+        nativeAdTmp._window = new WeakReference<>((Activity) window);
         nativeAdTmp._update();
     }
 
@@ -77,7 +78,7 @@ public class ZFAdForSplash {
     private int _appIdUpdateTaskId = ZFTaskId.INVALID;
     private String _adId = null;
     private boolean _nativeAdStarted = false;
-    private WeakReference<ZFUIRootWindow> _window = null;
+    private WeakReference<Activity> _window = null;
 
     private final FullScreenContentCallback _implListener = new FullScreenContentCallback() {
         @Override
@@ -126,7 +127,7 @@ public class ZFAdForSplash {
 
         if (impl == null) {
             AppOpenAd.load(
-                    _window.get().rootContainer().getContext()
+                    _window.get()
                     , _adId
                     , new AdRequest.Builder().build()
                     , new AppOpenAd.AppOpenAdLoadCallback() {

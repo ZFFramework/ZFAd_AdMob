@@ -54,18 +54,19 @@ public:
             ) {
         JNIEnv *jniEnv = JNIGetJNIEnv();
         static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), "native_nativeAdMeasure",
-            JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
+            JNIGetMethodSig(JNIType::S_array(JNIType::S_int()), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
                 .add(JNIType::S_int())
                 .add(JNIType::S_int())
             ).c_str());
-        jobject jSize = JNIUtilCallStaticObjectMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), jmId
+        jintArray jSize = (jintArray)JNIUtilCallStaticObjectMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), jmId
                 , (jobject)ad->nativeAd()
                 , (jint)sizeHint.width
                 , (jint)sizeHint.height
                 );
-        JNIScopeDeleteLocalRef(jSize);
-        return ZFImpl_sys_Android_ZFUISizeFromZFAndroidSize(jSize);
+        jint jSizeBuf[2];
+        JNIUtilGetIntArrayRegion(jniEnv, jSize, 0, 2, jSizeBuf);
+        return ZFUISizeCreate((zffloat)jSizeBuf[0], (zffloat)jSizeBuf[1]);
     }
 
     zfoverride

@@ -1,19 +1,19 @@
 package com.ZFFramework.ZFAd_AdMob;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
 import com.ZFFramework.NativeUtil.ZFAndroidLog;
-import com.ZFFramework.NativeUtil.ZFAndroidSize;
-import com.ZFFramework.NativeUtil.ZFAndroidUI;
 import com.ZFFramework.NativeUtil.ZFRunnable;
 import com.ZFFramework.NativeUtil.ZFString;
 import com.ZFFramework.NativeUtil.ZFTaskId;
-import com.ZFFramework.ZFUIKit_impl.ZFUIRootWindow;
 import com.ZFFramework.ZF_impl.ZFMainEntry;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -44,18 +44,20 @@ public class ZFAdForBanner extends FrameLayout {
         nativeAdTmp.impl = null;
     }
 
-    public static Object native_nativeAdMeasure(
+    public static int[] native_nativeAdMeasure(
             Object nativeAd
             , int widthHint
             , int heightHint
     ) {
         ZFAdForBanner nativeAdTmp = (ZFAdForBanner) nativeAd;
         if (nativeAdTmp._window == null || nativeAdTmp._window.get() == null) {
-            return ZFAndroidSize.Zero;
+            return new int[]{0, 0};
         }
-        Context context = nativeAdTmp._window.get().rootContainer().getContext();
+        Context context = nativeAdTmp._window.get();
         if (widthHint < 0) {
-            widthHint = ZFAndroidUI.screenSize(context).width;
+            DisplayMetrics dm = new DisplayMetrics();
+            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
+            widthHint = dm.widthPixels;
             if (widthHint < 0) {
                 widthHint = 240;
             }
@@ -66,7 +68,7 @@ public class ZFAdForBanner extends FrameLayout {
             nativeAdTmp.impl.setAdSize(implSize);
             nativeAdTmp.impl.loadAd(new AdRequest.Builder().build());
         }
-        return new ZFAndroidSize(widthHint, implSize.getHeight());
+        return new int[]{widthHint, implSize.getHeight()};
     }
 
     public static void native_nativeAdUpdate(
@@ -98,7 +100,7 @@ public class ZFAdForBanner extends FrameLayout {
             ZFAndroidLog.shouldNotGoHere();
             return;
         }
-        nativeAdTmp._window = new WeakReference<>((ZFUIRootWindow) window);
+        nativeAdTmp._window = new WeakReference<>((Activity) window);
         nativeAdTmp._update();
     }
 
@@ -131,7 +133,7 @@ public class ZFAdForBanner extends FrameLayout {
     // ============================================================
     private int _appIdUpdateTaskId = ZFTaskId.INVALID;
     private String _adId = null;
-    private WeakReference<ZFUIRootWindow> _window = null;
+    private WeakReference<Activity> _window = null;
     private int _widthPrev = -1;
 
     private final AdListener _implListener = new AdListener() {
@@ -191,7 +193,7 @@ public class ZFAdForBanner extends FrameLayout {
         }
 
         if (impl == null) {
-            impl = new AdView(_window.get().rootContainer().getContext());
+            impl = new AdView(_window.get());
             this.addView(impl, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             impl.setAdListener(_implListener);
         }
