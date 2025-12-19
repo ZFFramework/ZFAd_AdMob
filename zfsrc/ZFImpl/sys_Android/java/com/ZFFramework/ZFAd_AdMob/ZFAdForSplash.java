@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
+import com.ZFFramework.NativeUtil.ZFAndroidLog;
 import com.ZFFramework.NativeUtil.ZFRunnable;
 import com.ZFFramework.NativeUtil.ZFString;
 import com.ZFFramework.NativeUtil.ZFTaskId;
@@ -83,6 +84,7 @@ public class ZFAdForSplash {
     private final FullScreenContentCallback _implListener = new FullScreenContentCallback() {
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
+            ZFAndroidLog.p("[AdMob] onAdFailedToShowFullScreenContent: %s", error);
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
             }
@@ -90,6 +92,7 @@ public class ZFAdForSplash {
 
         @Override
         public void onAdShowedFullScreenContent() {
+            ZFAndroidLog.p("[AdMob] onAdShowedFullScreenContent");
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnDisplay(zfjniPointerOwnerZFAd);
             }
@@ -97,6 +100,7 @@ public class ZFAdForSplash {
 
         @Override
         public void onAdDismissedFullScreenContent() {
+            ZFAndroidLog.p("[AdMob] onAdDismissedFullScreenContent");
             if (zfjniPointerOwnerZFAd != -1) {
                 _nativeAdStarted = false;
                 _window = null;
@@ -106,10 +110,12 @@ public class ZFAdForSplash {
 
         @Override
         public void onAdImpression() {
+            ZFAndroidLog.p("[AdMob] onAdImpression");
         }
 
         @Override
         public void onAdClicked() {
+            ZFAndroidLog.p("[AdMob] onAdClicked");
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnClick(zfjniPointerOwnerZFAd);
             }
@@ -135,18 +141,21 @@ public class ZFAdForSplash {
                         public void onAdLoaded(@NonNull AppOpenAd appOpenAd) {
                             super.onAdLoaded(appOpenAd);
                             impl = appOpenAd;
+                            ZFAndroidLog.p("[AdMob] onAdLoaded");
                             _update();
                         }
 
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError error) {
                             super.onAdFailedToLoad(error);
+                            ZFAndroidLog.p("[AdMob] onAdFailedToLoad: %s", error);
                             impl = null;
                             native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
                         }
                     }
             );
         } else {
+            impl.setFullScreenContentCallback(_implListener);
             impl.show(_window.get());
         }
     }

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ZFAd_AdMob"
+rootProject.name = 'ZFAd_AdMob'
 include ':zflib'
 
