@@ -32,14 +32,34 @@ public class ZFAdForBanner extends FrameLayout {
         return impl;
     }
 
-    public static Object native_nativeAdCreate(long zfjniPointerOwnerZFAd) {
+    public static Object native_nativeAdCreate(
+            long zfjniPointerOwnerZFAd
+            , String appId
+            , String adId
+    ) {
         ZFAdForBanner nativeAd = new ZFAdForBanner(ZFMainEntry.appContext());
         nativeAd.zfjniPointerOwnerZFAd = zfjniPointerOwnerZFAd;
+        nativeAd._adId = adId;
+        nativeAd._appIdUpdateTaskId = ZFAd.appIdUpdate(new ZFRunnable.P2<Boolean, String>() {
+            @Override
+            public void run(Boolean success, String error) {
+                nativeAd._appIdUpdateTaskId = ZFTaskId.INVALID;
+                if (success) {
+                    nativeAd._update();
+                } else {
+                    ZFAndroidLog.p("[AdMob][banner] %s init fail: %s", nativeAd._adId, error);
+                }
+            }
+        });
         return nativeAd;
     }
 
     public static void native_nativeAdDestroy(Object nativeAd) {
         ZFAdForBanner nativeAdTmp = (ZFAdForBanner) nativeAd;
+        if (nativeAdTmp._appIdUpdateTaskId != ZFTaskId.INVALID) {
+            ZFAd.appIdUpdateCancel(nativeAdTmp._appIdUpdateTaskId);
+            nativeAdTmp._appIdUpdateTaskId = ZFTaskId.INVALID;
+        }
         nativeAdTmp.zfjniPointerOwnerZFAd = -1;
         nativeAdTmp.impl = null;
     }
@@ -69,25 +89,6 @@ public class ZFAdForBanner extends FrameLayout {
             nativeAdTmp.impl.loadAd(new AdRequest.Builder().build());
         }
         return new int[]{widthHint, implSize.getHeight()};
-    }
-
-    public static void native_nativeAdUpdate(
-            Object nativeAd
-            , String adId
-    ) {
-        ZFAdForBanner nativeAdTmp = (ZFAdForBanner) nativeAd;
-        if (nativeAdTmp._appIdUpdateTaskId != ZFTaskId.INVALID) {
-            ZFAd.appIdUpdateCancel(nativeAdTmp._appIdUpdateTaskId);
-        }
-        nativeAdTmp._adId = null;
-        nativeAdTmp._appIdUpdateTaskId = ZFAd.appIdUpdate(new ZFRunnable.P2<Boolean, String>() {
-            @Override
-            public void run(Boolean success, String errorHint) {
-                nativeAdTmp._appIdUpdateTaskId = ZFTaskId.INVALID;
-                nativeAdTmp._adId = adId;
-                nativeAdTmp._update();
-            }
-        });
     }
 
     public static void native_nativeAdWindowUpdate(Object nativeAd, Object window) {
