@@ -2,8 +2,6 @@ package com.ZFFramework.ZFAd_AdMob;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-
 import com.ZFFramework.NativeUtil.ZFAndroidLog;
 import com.ZFFramework.NativeUtil.ZFRunnable;
 import com.ZFFramework.NativeUtil.ZFString;
@@ -83,7 +81,7 @@ public class ZFAdForSplash {
 
     private final FullScreenContentCallback _implListener = new FullScreenContentCallback() {
         @Override
-        public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
+        public void onAdFailedToShowFullScreenContent(AdError error) {
             ZFAndroidLog.p("[AdMob][splash] %s onAdFailedToShowFullScreenContent: %s", _adId, error);
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
@@ -93,9 +91,6 @@ public class ZFAdForSplash {
         @Override
         public void onAdShowedFullScreenContent() {
             ZFAndroidLog.p("[AdMob][splash] %s onAdShowedFullScreenContent", _adId);
-            if (zfjniPointerOwnerZFAd != -1) {
-                native_notifyAdOnDisplay(zfjniPointerOwnerZFAd);
-            }
         }
 
         @Override
@@ -111,6 +106,9 @@ public class ZFAdForSplash {
         @Override
         public void onAdImpression() {
             ZFAndroidLog.p("[AdMob][splash] %s onAdImpression", _adId);
+            if (zfjniPointerOwnerZFAd != -1) {
+                native_notifyAdOnDisplay(zfjniPointerOwnerZFAd);
+            }
         }
 
         @Override
@@ -138,7 +136,7 @@ public class ZFAdForSplash {
                     , new AdRequest.Builder().build()
                     , new AppOpenAd.AppOpenAdLoadCallback() {
                         @Override
-                        public void onAdLoaded(@NonNull AppOpenAd appOpenAd) {
+                        public void onAdLoaded(AppOpenAd appOpenAd) {
                             super.onAdLoaded(appOpenAd);
                             impl = appOpenAd;
                             ZFAndroidLog.p("[AdMob][splash] %s onAdLoaded", _adId);
@@ -146,7 +144,7 @@ public class ZFAdForSplash {
                         }
 
                         @Override
-                        public void onAdFailedToLoad(@NonNull LoadAdError error) {
+                        public void onAdFailedToLoad(LoadAdError error) {
                             super.onAdFailedToLoad(error);
                             ZFAndroidLog.p("[AdMob][splash] %s onAdFailedToLoad: %s", _adId, error);
                             impl = null;

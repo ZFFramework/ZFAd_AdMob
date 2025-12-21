@@ -1,7 +1,6 @@
 package com.ZFFramework.ZFAd_AdMob;
 
-import androidx.annotation.NonNull;
-
+import com.ZFFramework.NativeUtil.ZFAndroidAsync;
 import com.ZFFramework.NativeUtil.ZFAndroidLog;
 import com.ZFFramework.NativeUtil.ZFAndroidPost;
 import com.ZFFramework.NativeUtil.ZFRunnable;
@@ -11,6 +10,8 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.AdapterStatus;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.List;
 import java.util.Map;
@@ -25,24 +26,36 @@ public class ZFAd {
         if (!_initRunning) {
             _initRunning = true;
             _initSuccess = false;
-            MobileAds.initialize(ZFMainEntry.appContext(), new OnInitializationCompleteListener() {
+            ZFAndroidAsync.run(new Runnable() {
                 @Override
-                public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-                    String info;
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        for (Map.Entry<String, AdapterStatus> entry : initializationStatus.getAdapterStatusMap().entrySet()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(entry.getKey());
-                            sb.append("=");
-                            sb.append(entry.getValue().getDescription());
-                        }
-                        info = sb.toString();
+                public void run() {
+                    int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ZFMainEntry.appContext());
+                    if (resultCode != ConnectionResult.SUCCESS) {
+                        _notifyFinish(false, String.format("google play service not available: %s"
+                                , GoogleApiAvailability.getInstance().getErrorString(resultCode)
+                        ));
+                        return;
                     }
-                    ZFAndroidLog.p("[AdMob] init finish: %s", info);
-                    _notifyFinish(!initializationStatus.getAdapterStatusMap().isEmpty(), info);
+                    MobileAds.initialize(ZFMainEntry.appContext(), new OnInitializationCompleteListener() {
+                        @Override
+                        public void onInitializationComplete(InitializationStatus initializationStatus) {
+                            String info;
+                            {
+                                StringBuilder sb = new StringBuilder();
+                                for (Map.Entry<String, AdapterStatus> entry : initializationStatus.getAdapterStatusMap().entrySet()) {
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(entry.getKey());
+                                    sb.append("=");
+                                    sb.append(entry.getValue().getDescription());
+                                }
+                                info = sb.toString();
+                            }
+                            ZFAndroidLog.p("[AdMob] init finish: %s", info);
+                            _notifyFinish(!initializationStatus.getAdapterStatusMap().isEmpty(), info);
+                        }
+                    });
                 }
             });
         }

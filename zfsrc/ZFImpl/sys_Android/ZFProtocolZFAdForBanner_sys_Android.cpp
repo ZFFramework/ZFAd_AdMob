@@ -6,7 +6,7 @@
 #if ZF_ENV_sys_Android
 ZF_NAMESPACE_GLOBAL_BEGIN
 
-#define ZFImpl_sys_Android_JNI_ID_ZFAdForBanner ZFImpl_sys_Android_JNI_ID(ZFAd_1impl_ZFAdForBanner)
+#define ZFImpl_sys_Android_JNI_ID_ZFAdForBanner ZFImpl_sys_Android_JNI_ID(ZFAd_1AdMob_ZFAdForBanner)
 #define ZFImpl_sys_Android_JNI_NAME_ZFAdForBanner ZFImpl_sys_Android_JNI_NAME(ZFAd_AdMob.ZFAdForBanner)
 ZFImpl_sys_Android_jclass_DEFINE(ZFImpl_sys_Android_jclassZFAdForBanner, ZFImpl_sys_Android_JNI_NAME_ZFAdForBanner)
 

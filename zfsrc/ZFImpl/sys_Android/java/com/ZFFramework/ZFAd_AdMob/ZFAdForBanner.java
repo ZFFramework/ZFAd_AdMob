@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-
 import com.ZFFramework.NativeUtil.ZFAndroidLog;
 import com.ZFFramework.NativeUtil.ZFRunnable;
 import com.ZFFramework.NativeUtil.ZFString;
@@ -74,21 +72,21 @@ public class ZFAdForBanner extends FrameLayout {
             return new int[]{0, 0};
         }
         Context context = nativeAdTmp._window.get();
+        DisplayMetrics dm = new DisplayMetrics();
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
         if (widthHint < 0) {
-            DisplayMetrics dm = new DisplayMetrics();
-            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
             widthHint = dm.widthPixels;
             if (widthHint < 0) {
                 widthHint = 240;
             }
         }
-        AdSize implSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, widthHint);
+        AdSize implSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, (int) Math.floor(widthHint / dm.density));
         if (nativeAdTmp._widthPrev != widthHint) {
             ZFAndroidLog.p("[AdMob][banner] %s size update: %s (%s %s)", nativeAdTmp._adId, widthHint, implSize.getWidth(), implSize.getHeight());
             nativeAdTmp.impl.setAdSize(implSize);
             nativeAdTmp.impl.loadAd(new AdRequest.Builder().build());
         }
-        return new int[]{widthHint, implSize.getHeight()};
+        return new int[]{widthHint, (int) Math.ceil(implSize.getHeight() * dm.density)};
     }
 
     public static void native_nativeAdWindowUpdate(Object nativeAd, Object window) {
@@ -144,7 +142,7 @@ public class ZFAdForBanner extends FrameLayout {
         }
 
         @Override
-        public void onAdFailedToLoad(@NonNull LoadAdError error) {
+        public void onAdFailedToLoad(LoadAdError error) {
             ZFAndroidLog.p("[AdMob][banner] %s onAdFailedToLoad: %s", _adId, error);
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
@@ -197,8 +195,8 @@ public class ZFAdForBanner extends FrameLayout {
             impl = new AdView(_window.get());
             this.addView(impl, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             impl.setAdListener(_implListener);
+            impl.setAdUnitId(_adId);
         }
-        impl.setAdUnitId(_adId);
         ZFAndroidLog.p("[AdMob][banner] %s update", _adId);
     }
 

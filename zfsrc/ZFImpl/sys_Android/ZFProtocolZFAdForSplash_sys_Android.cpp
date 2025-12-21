@@ -6,7 +6,7 @@
 #if ZF_ENV_sys_Android
 ZF_NAMESPACE_GLOBAL_BEGIN
 
-#define ZFImpl_sys_Android_JNI_ID_ZFAdForSplash ZFImpl_sys_Android_JNI_ID(ZFAd_1impl_ZFAdForSplash)
+#define ZFImpl_sys_Android_JNI_ID_ZFAdForSplash ZFImpl_sys_Android_JNI_ID(ZFAd_1AdMob_ZFAdForSplash)
 #define ZFImpl_sys_Android_JNI_NAME_ZFAdForSplash ZFImpl_sys_Android_JNI_NAME(ZFAd_AdMob.ZFAdForSplash)
 ZFImpl_sys_Android_jclass_DEFINE(ZFImpl_sys_Android_jclassZFAdForSplash, ZFImpl_sys_Android_JNI_NAME_ZFAdForSplash)
 
