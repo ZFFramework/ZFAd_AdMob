@@ -26,10 +26,6 @@ public class ZFAdForBanner extends FrameLayout {
     public long zfjniPointerOwnerZFAd = -1;
     public AdView impl = null;
 
-    public Object zfnativeImpl() {
-        return impl;
-    }
-
     public static Object native_nativeAdCreate(
             long zfjniPointerOwnerZFAd
             , String appId
@@ -38,15 +34,17 @@ public class ZFAdForBanner extends FrameLayout {
         ZFAdForBanner nativeAd = new ZFAdForBanner(ZFMainEntry.appContext());
         nativeAd.zfjniPointerOwnerZFAd = zfjniPointerOwnerZFAd;
         nativeAd._adId = adId;
-        nativeAd._appIdUpdateTaskId = ZFAd.appIdUpdate(new ZFRunnable.P2<Boolean, String>() {
+        nativeAd._appIdUpdateTaskId = ZFAd.appIdUpdate(appId, new ZFRunnable.P2<Boolean, String>() {
             @Override
-            public void run(Boolean success, String error) {
+            public void run(Boolean success, String errorHint) {
                 nativeAd._appIdUpdateTaskId = ZFTaskId.INVALID;
-                if (success) {
-                    nativeAd._update();
-                } else {
-                    ZFAndroidLog.p("[AdMob][banner] %s init fail: %s", nativeAd._adId, error);
+                if (!success) {
+                    if (ZFAd.DEBUG) {
+                        ZFAndroidLog.p("[AdMob][banner] %s init fail: %s", nativeAd._adId, errorHint);
+                    }
+                    return;
                 }
+                nativeAd._update();
             }
         });
         return nativeAd;
@@ -68,10 +66,10 @@ public class ZFAdForBanner extends FrameLayout {
             , int heightHint
     ) {
         ZFAdForBanner nativeAdTmp = (ZFAdForBanner) nativeAd;
-        if (nativeAdTmp._window == null || nativeAdTmp._window.get() == null) {
+        if (nativeAdTmp._ownerWindow == null || nativeAdTmp._ownerWindow.get() == null) {
             return new int[]{0, 0};
         }
-        Context context = nativeAdTmp._window.get();
+        Context context = nativeAdTmp._ownerWindow.get();
         DisplayMetrics dm = new DisplayMetrics();
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
         if (widthHint < 0) {
@@ -82,7 +80,9 @@ public class ZFAdForBanner extends FrameLayout {
         }
         AdSize implSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, (int) Math.floor(widthHint / dm.density));
         if (nativeAdTmp._widthPrev != widthHint) {
-            ZFAndroidLog.p("[AdMob][banner] %s size update: %s (%s %s)", nativeAdTmp._adId, widthHint, implSize.getWidth(), implSize.getHeight());
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s size update: %s (%s %s)", nativeAdTmp._adId, widthHint, implSize.getWidth(), implSize.getHeight());
+            }
             nativeAdTmp.impl.setAdSize(implSize);
             nativeAdTmp.impl.loadAd(new AdRequest.Builder().build());
         }
@@ -95,11 +95,11 @@ public class ZFAdForBanner extends FrameLayout {
             return;
         }
         ZFAdForBanner nativeAdTmp = (ZFAdForBanner) nativeAd;
-        if (nativeAdTmp._window != null && nativeAdTmp._window.get() != null && nativeAdTmp._window.get() != window) {
+        if (nativeAdTmp._ownerWindow != null && nativeAdTmp._ownerWindow.get() != null && nativeAdTmp._ownerWindow.get() != window) {
             ZFAndroidLog.shouldNotGoHere();
             return;
         }
-        nativeAdTmp._window = new WeakReference<>((Activity) window);
+        nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp._update();
     }
 
@@ -132,31 +132,32 @@ public class ZFAdForBanner extends FrameLayout {
     // ============================================================
     private int _appIdUpdateTaskId = ZFTaskId.INVALID;
     private String _adId = null;
-    private WeakReference<Activity> _window = null;
+    private WeakReference<Activity> _ownerWindow = null;
     private int _widthPrev = -1;
 
     private final AdListener _implListener = new AdListener() {
         @Override
-        public void onAdClosed() {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdClosed", _adId);
-        }
-
-        @Override
         public void onAdFailedToLoad(LoadAdError error) {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdFailedToLoad: %s", _adId, error);
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdFailedToLoad: %s", _adId, error);
+            }
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
             }
         }
 
         @Override
-        public void onAdOpened() {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdOpened", _adId);
+        public void onAdLoaded() {
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdLoaded", _adId);
+            }
         }
 
         @Override
-        public void onAdLoaded() {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdLoaded", _adId);
+        public void onAdImpression() {
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdImpression", _adId);
+            }
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnDisplay(zfjniPointerOwnerZFAd);
             }
@@ -164,40 +165,52 @@ public class ZFAdForBanner extends FrameLayout {
 
         @Override
         public void onAdClicked() {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdClicked", _adId);
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdClicked", _adId);
+            }
             if (zfjniPointerOwnerZFAd != -1) {
                 native_notifyAdOnClick(zfjniPointerOwnerZFAd);
             }
         }
 
         @Override
-        public void onAdImpression() {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdImpression", _adId);
-            if (zfjniPointerOwnerZFAd != -1) {
-                native_notifyAdOnClose(zfjniPointerOwnerZFAd);
+        public void onAdSwipeGestureClicked() {
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdSwipeGestureClicked", _adId);
             }
         }
 
         @Override
-        public void onAdSwipeGestureClicked() {
-            ZFAndroidLog.p("[AdMob][banner] %s onAdSwipeGestureClicked", _adId);
+        public void onAdOpened() {
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdOpened", _adId);
+            }
+        }
+
+        @Override
+        public void onAdClosed() {
+            if (ZFAd.DEBUG) {
+                ZFAndroidLog.p("[AdMob][banner] %s onAdClosed", _adId);
+            }
         }
     };
 
     private void _update() {
         if (ZFString.isEmpty(_adId)
-                || _window == null || _window.get() == null
+                || _ownerWindow == null || _ownerWindow.get() == null
         ) {
             return;
         }
 
         if (impl == null) {
-            impl = new AdView(_window.get());
+            impl = new AdView(_ownerWindow.get());
             this.addView(impl, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             impl.setAdListener(_implListener);
             impl.setAdUnitId(_adId);
         }
-        ZFAndroidLog.p("[AdMob][banner] %s update", _adId);
+        if (ZFAd.DEBUG) {
+            ZFAndroidLog.p("[AdMob][banner] %s update", _adId);
+        }
     }
 
 }

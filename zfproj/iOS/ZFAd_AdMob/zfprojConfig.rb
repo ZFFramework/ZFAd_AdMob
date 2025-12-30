@@ -1,5 +1,5 @@
 
 def zfprojConfig_ZFAd_AdMob(target)
-    target.pod 'GDTMobSDK'
+    target.pod 'Google-Mobile-Ads-SDK'
 end
 

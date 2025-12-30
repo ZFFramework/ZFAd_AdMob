@@ -5,158 +5,108 @@
 
 #if ZF_ENV_sys_iOS
 
-#import "GDTSplashAd.h"
+#import "GoogleMobileAds/GADAppOpenAd.h"
 
-@interface _ZFP_ZFImpl_sys_iOS_ZFAdForSplash : UIView<GDTSplashAdDelegate>
-@property (nonatomic, assign) zfweakT<ZFAdForSplash> ad;
-@property (nonatomic, strong) GDTSplashAd *impl;
-@property (nonatomic, assign) zfbool appIdUpdateFinish;
-@property (nonatomic, assign) zfbool loadFinish;
-@property (nonatomic, assign) zfbool displayFinish;
-@property (nonatomic, assign) zfautoT<ZFTaskId> appIdUpdateTaskId;
-@property (nonatomic, weak) UIViewController *rootWindow;
+@interface _ZFP_ZFImpl_sys_iOS_ZFAdForSplash : UIView<GADFullScreenContentDelegate>
+@property (nonatomic, strong) GADAppOpenAd *impl;
+@property (nonatomic, assign) zfweakT<ZFAdForSplash> _ad;
+@property (nonatomic, assign) zfautoT<ZFTaskId> _appIdUpdateTaskId;
+@property (nonatomic, assign) zfstring _adId;
+@property (nonatomic, assign) zfbool _nativeAdStarted;
+@property (nonatomic, weak) UIViewController *_ownerWindow;
 @end
 @implementation _ZFP_ZFImpl_sys_iOS_ZFAdForSplash
-- (void)splashAdSuccessPresentScreen:(GDTSplashAd *)splashAd {
+- (void)ad:(id<GADFullScreenPresentingAd>)ad didFailToPresentFullScreenContentWithError:(NSError *)error {
+    zfstring errorHint;
+    ZFImpl_sys_iOS_zfstringFromNSString(errorHint, error.description);
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onRender", self.ad.get());
+    ZFLogTrim("[AdMob][splash] %s ad:didFailToPresentFullScreenContentWithError: %s", self._adId, errorHint);
+#endif
+    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnError(self._ad, errorHint);
+}
+- (void)adWillPresentFullScreenContent:(id<GADFullScreenPresentingAd>)ad {
+#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
+    ZFLogTrim("[AdMob][splash] %s adWillPresentFullScreenContent", self._adId);
 #endif
 }
-- (void)splashAdDidLoad:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onLoad", self.ad.get());
-#endif
-    self.loadFinish = zftrue;
-    [self.impl showFullScreenAdInWindow:self.rootWindow.view.window withLogoImage:nil skipView:nil];
+- (void)adWillDismissFullScreenContent:(id<GADFullScreenPresentingAd>)ad {
 }
-- (void)splashAdFailToPresent:(GDTSplashAd *)splashAd withError:(NSError *)error {
+- (void)adDidDismissFullScreenContent:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onError: %s", self.ad.get(), ZFImpl_sys_iOS_zfstringFromNSString(error.description));
+    ZFLogTrim("[AdMob][splash] %s adDidDismissFullScreenContent", self._adId);
 #endif
-    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnError(self.ad, ZFImpl_sys_iOS_zfstringFromNSString(error.description));
+    self._nativeAdStarted = zffalse;
+    self._ownerWindow = nil;
+    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Success);
 }
-- (void)splashAdApplicationWillEnterBackground:(GDTSplashAd *)splashAd {
+- (void)adDidRecordImpression:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onLeaveApp", self.ad.get());
+    ZFLogTrim("[AdMob][splash] %s adDidRecordImpression", self._adId);
 #endif
+    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnDisplay(self._ad);
 }
-- (void)splashAdExposured:(GDTSplashAd *)splashAd {
+- (void)adDidRecordClick:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onDisplay", self.ad.get());
+    ZFLogTrim("[AdMob][splash] %s adDidRecordClick", self._adId);
 #endif
-    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnDisplay(self.ad);
-}
-- (void)splashAdClicked:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onClick", self.ad.get());
-#endif
-    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnClick(self.ad);
-}
-- (void)splashAdWillClosed:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onCloseBegin", self.ad.get());
-#endif
-}
-- (void)splashAdClosed:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onCloseEnd", self.ad.get());
-#endif
-    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnStop(self.ad, self.displayFinish ? v_ZFResultType::e_Success : v_ZFResultType::e_Cancel);
-}
-- (void)splashAdWillPresentFullScreenModal:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onShowBegin", self.ad.get());
-#endif
-}
-- (void)splashAdDidPresentFullScreenModal:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onShowEnd", self.ad.get());
-#endif
-}
-- (void)splashAdWillDismissFullScreenModal:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onHideBegin", self.ad.get());
-#endif
-}
-- (void)splashAdDidDismissFullScreenModal:(GDTSplashAd *)splashAd {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onHideEnd", self.ad.get());
-#endif
-    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnStop(self.ad, v_ZFResultType::e_Success);
-}
-- (void)splashAdLifeTime:(NSUInteger)time {
-#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onTimer: %s", self.ad.get(), (zfuint)time);
-#endif
-    if(time <= 0) {
-        self.displayFinish = zftrue;
-    }
+    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnClick(self._ad);
 }
 @end
 
 ZF_NAMESPACE_GLOBAL_BEGIN
 
-ZFPROTOCOL_IMPLEMENTATION_BEGIN(ZFAdForSplash_sys_iOS, ZFAdForSplash, v_ZFProtocolLevel::e_SystemNormal)
-    ZFPROTOCOL_IMPLEMENTATION_PLATFORM_HINT("iOS:UIViewController")
-    ZFPROTOCOL_IMPLEMENTATION_PLATFORM_DEPENDENCY_BEGIN()
-    ZFPROTOCOL_IMPLEMENTATION_PLATFORM_DEPENDENCY_ITEM(ZFUIView, "iOS:UIView")
-    ZFPROTOCOL_IMPLEMENTATION_PLATFORM_DEPENDENCY_ITEM(ZFUIRootWindow, "iOS:UIViewController")
-    ZFPROTOCOL_IMPLEMENTATION_PLATFORM_DEPENDENCY_END()
+zfclass ZFAdForSplashImpl_AdMob : zfextend ZFObject, zfimplement ZFAdForSplashImpl {
+    ZFOBJECT_DECLARE(ZFAdForSplashImpl_AdMob, ZFObject)
+    ZFIMPLEMENT_DECLARE(ZFAdForSplashImpl)
 
 public:
     zfoverride
-    virtual void *nativeAdCreate(ZF_IN ZFAdForSplash *ad) {
+    virtual void *nativeAdCreate(
+            ZF_IN ZFAdForSplash *ad
+            , ZF_IN const zfstring &appId
+            , ZF_IN const zfstring &adId
+            ) {
+        if(zffalse
+                || ZFProtocolTryAccess("ZFUIView", "iOS:UIView") == zfnull
+                || ZFProtocolTryAccess("ZFUIRootWindow", "iOS:UIViewController") == zfnull
+                ) {
+            return zfnull;
+        }
+
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = [_ZFP_ZFImpl_sys_iOS_ZFAdForSplash new];
-        nativeAd.ad = ad;
+        nativeAd._ad = ad;
+        nativeAd._adId = adId;
+        ZFLISTENER_1(onFinish
+                , zfweakT<ZFAdForSplash>, ad
+                ) {
+            zfbool success = zfargs.param0().to<v_zfbool *>()->zfv;
+            _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
+            nativeAd._appIdUpdateTaskId = zfnull;
+            if(!success) {
+#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
+                ZFLogTrim("[AdMob][splash] %s init fail: %s", nativeAd._adId
+                          , zfargs.param1().to<v_zfstring *>()->zfv
+                          );
+#endif
+                return;
+            }
+            _update(nativeAd);
+        } ZFLISTENER_END()
+        nativeAd._appIdUpdateTaskId = ZFImpl_sys_iOS_ZFAd_appIdUpdate(appId, onFinish);
+
         return (__bridge_retained void *)nativeAd;
     }
     zfoverride
     virtual void nativeAdDestroy(ZF_IN ZFAdForSplash *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge_transfer _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
-        if(nativeAd.appIdUpdateTaskId) {
-            nativeAd.appIdUpdateTaskId->stop();
-            nativeAd.appIdUpdateTaskId = zfnull;
+        if(nativeAd._appIdUpdateTaskId) {
+            nativeAd._appIdUpdateTaskId->stop();
+            nativeAd._appIdUpdateTaskId = zfnull;
         }
-        if(nativeAd.impl != nil) {
-            nativeAd.impl.delegate = nil;
-            nativeAd.impl = nil;
-        }
+        nativeAd._nativeAdStarted = zffalse;
+        nativeAd.impl.fullScreenContentDelegate = nil;
+        nativeAd.impl = nil;
         nativeAd = nil;
-    }
-
-    zfoverride
-    virtual void nativeAdUpdate(ZF_IN ZFAdForSplash *ad) {
-        _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
-        if(nativeAd.appIdUpdateTaskId) {
-            nativeAd.appIdUpdateTaskId->stop();
-        }
-        ZFLISTENER_1(onFinish
-                , zfweakT<ZFAdForSplash>, ad
-                ) {
-            ZFCoreAssert(ad);
-            v_ZFResultType *resultType = zfargs.param0();
-            switch(resultType->zfv()) {
-                case v_ZFResultType::e_Success:
-                    break;
-                case v_ZFResultType::e_Fail:
-                    ZFPROTOCOL_ACCESS(ZFAdForSplash)->notifyAdOnError(ad, zfargs.param1().to<v_zfstring *>()->zfv);
-                    return;
-                case v_ZFResultType::e_Cancel:
-                    return;
-                default:
-                    ZFCoreCriticalShouldNotGoHere();
-                    return;
-            }
-            _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
-            if(nativeAd) {
-                nativeAd.appIdUpdateTaskId = zfnull;
-            }
-            nativeAd.appIdUpdateFinish = zftrue;
-            if(ad->adId()) {
-                _load(ad, nativeAd);
-            }
-        } ZFLISTENER_END()
-        nativeAd.appIdUpdateTaskId = ZFImpl_sys_iOS_ZFAd_appId(ad->appId(), onFinish);
     }
 
     zfoverride
@@ -165,33 +115,60 @@ public:
             , ZF_IN ZFUIRootWindow *window
             ) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
-        nativeAd.rootWindow = (__bridge UIViewController *)window->nativeWindow();
-        if(nativeAd.appIdUpdateFinish) {
-            _load(ad, nativeAd);
-            if(nativeAd.loadFinish) {
-                [nativeAd.impl showFullScreenAdInWindow:nativeAd.rootWindow.view.window withLogoImage:nil skipView:nil];
-            }
-        }
-    }
-    zfoverride
-    virtual void nativeAdStop(ZF_IN ZFAdForSplash *ad) {
-        _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
-        nativeAd.impl.delegate = nil;
-        nativeAd.impl = nil;
+        nativeAd._nativeAdStarted = zftrue;
+        nativeAd._ownerWindow = (__bridge UIViewController *)window->nativeWindow();
+        _update(nativeAd);
     }
 
 private:
-    static void _load(ZF_IN ZFAdForSplash *ad, ZF_IN _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd) {
-        if(nativeAd.impl != nil) {
+    static void _update(ZF_IN _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd) {
+        if(!nativeAd._nativeAdStarted
+                || nativeAd._appIdUpdateTaskId
+        ) {
             return;
         }
-        nativeAd.impl = [[GDTSplashAd alloc]
-                initWithPlacementId:ZFImpl_sys_iOS_zfstringToNSString(ad->adId())
-                ];
-        nativeAd.impl.delegate = nativeAd;
-        [nativeAd.impl loadFullScreenAd];
+        if(nativeAd._ownerWindow == nil) {
+            nativeAd._nativeAdStarted = zffalse;
+            zfstring errorHint;
+            zfstringAppend(errorHint, "[AdMob][splash] %s unable to obtain window", nativeAd._adId);
+#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
+            ZFLogTrim("%s", errorHint);
+#endif
+            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+            return;
+        }
+        
+        if(nativeAd.impl == nil) {
+            [GADAppOpenAd loadWithAdUnitID:ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId)
+                request:[GADRequest request]
+                completionHandler:^(GADAppOpenAd *appOpenAd, NSError *error) {
+                    if(!error) {
+                        nativeAd.impl = appOpenAd;
+#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
+                        ZFLogTrim("[AdMob][splash] %s onAdLoaded", nativeAd._adId);
+#endif
+                        _update(nativeAd);
+                    }
+                    else {
+                        zfstring errorHint;
+                        ZFImpl_sys_iOS_zfstringFromNSString(errorHint, error.description);
+#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
+                        ZFLogTrim("[AdMob][splash] %s onAdFailedToLoad: %s", nativeAd._adId, errorHint);
+#endif
+                        nativeAd.impl.fullScreenContentDelegate = nil;
+                        nativeAd.impl = nil;
+                        nativeAd._nativeAdStarted = zffalse;
+                        ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                    }
+                }];
+        }
+        else {
+            nativeAd.impl.fullScreenContentDelegate = nativeAd;
+            [nativeAd.impl presentFromRootViewController:nativeAd._ownerWindow];
+        }
     }
-ZFPROTOCOL_IMPLEMENTATION_END(ZFAdForSplash_sys_iOS)
+};
+ZFOBJECT_REGISTER(ZFAdForSplashImpl_AdMob)
 
 ZF_NAMESPACE_GLOBAL_END
 #endif // #if ZF_ENV_sys_iOS
