@@ -1,7 +1,7 @@
 #include "ZFImpl_sys_Android_ZFAd_AdMob.h"
 #include "ZFAd/protocol/ZFProtocolZFAdForBanner.h"
 
-#define _ZFP_ZFImpl_sys_Android_ZFAdForBanner_DEBUG 1
+// #define _ZFP_ZFImpl_sys_Android_ZFAdForBanner_DEBUG 1
 
 #if ZF_ENV_sys_Android
 ZF_NAMESPACE_GLOBAL_BEGIN
