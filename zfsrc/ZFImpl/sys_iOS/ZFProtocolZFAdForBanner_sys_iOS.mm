@@ -128,8 +128,16 @@ public:
         if(nativeAd._ownerWindow == nil) {
             return ZFUISizeZero();
         }
-        GADAdSize implSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth([UIApplication sharedApplication].delegate.window.frame.size.width);
-        if(nativeAd._widthPrev != sizeHint.width) {
+        CGFloat widthHint = (CGFloat)sizeHint.width;
+        if(widthHint <= 0) {
+            widthHint = [UIApplication sharedApplication].delegate.window.frame.size.width;
+            if(widthHint <= 0) {
+                widthHint = 240;
+            }
+        }
+        GADAdSize implSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(widthHint);
+        if(nativeAd._widthPrev <= 0 || zfmAbs(nativeAd._widthPrev - sizeHint.width) >= 80) {
+            nativeAd._widthPrev = sizeHint.width;
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG
             ZFLogTrim("[AdMob][banner] %s size update: %s (%s, %s)", nativeAd._adId, sizeHint.width, implSize.size.width, implSize.size.height);
 #endif

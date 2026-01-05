@@ -72,14 +72,15 @@ public class ZFAdForBanner extends FrameLayout {
         Context context = nativeAdTmp._ownerWindow.get();
         DisplayMetrics dm = new DisplayMetrics();
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
-        if (widthHint < 0) {
+        if (widthHint <= 0) {
             widthHint = dm.widthPixels;
-            if (widthHint < 0) {
+            if (widthHint <= 0) {
                 widthHint = 240;
             }
         }
         AdSize implSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, (int) Math.floor(widthHint / dm.density));
-        if (nativeAdTmp._widthPrev != widthHint) {
+        if (nativeAdTmp._widthPrev <= 0 || Math.abs(nativeAdTmp._widthPrev - widthHint) / dm.density >= 80) {
+            nativeAdTmp._widthPrev = widthHint;
             if (ZFAd.DEBUG) {
                 ZFAndroidLog.p("[AdMob][banner] %s size update: %s (%s %s)", nativeAdTmp._adId, widthHint, implSize.getWidth(), implSize.getHeight());
             }
