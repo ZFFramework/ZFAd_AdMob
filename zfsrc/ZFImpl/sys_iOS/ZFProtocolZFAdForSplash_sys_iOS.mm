@@ -137,7 +137,7 @@ private:
             ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
             return;
         }
-        
+
         if(nativeAd.impl == nil) {
             [GADAppOpenAd loadWithAdUnitID:ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId)
                 request:[GADRequest request]
