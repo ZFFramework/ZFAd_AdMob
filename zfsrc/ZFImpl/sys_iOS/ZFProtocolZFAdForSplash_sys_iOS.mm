@@ -83,11 +83,13 @@ public:
             _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
             nativeAd._appIdUpdateTaskId = zfnull;
             if(!success) {
+                const zfstring &errorHint = zfargs.param1().to<v_zfstring *>()->zfv;
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
                 ZFLogTrim("[AdMob][splash] %s init fail: %s", nativeAd._adId
-                          , zfargs.param1().to<v_zfstring *>()->zfv
+                          , errorHint
                           );
 #endif
+                ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
                 return;
             }
             _update(nativeAd);
