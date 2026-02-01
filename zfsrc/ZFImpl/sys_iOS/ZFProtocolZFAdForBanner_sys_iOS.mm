@@ -83,10 +83,9 @@ public:
         nativeAd._ad = ad;
         nativeAd._adId = adId;
         ZFLISTENER_1(onFinish
-                , zfweakT<ZFAdForBanner>, ad
+                , _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *, nativeAd
                 ) {
             zfbool success = zfargs.param0().to<v_zfbool *>()->zfv;
-            _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
             nativeAd._appIdUpdateTaskId = zfnull;
             if(!success) {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG
@@ -99,13 +98,10 @@ public:
         } ZFLISTENER_END()
         nativeAd._appIdUpdateTaskId = ZFImpl_sys_iOS_ZFAd_appIdUpdate(appId, onFinish);
 
-        _ownerWindowUpdateAttach(ad);
         return (__bridge_retained void *)nativeAd;
     }
     zfoverride
     virtual void nativeAdDestroy(ZF_IN ZFAdForBanner *ad) {
-        _ownerWindowUpdateDetach(ad);
-
         _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge_transfer _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
         if(nativeAd._appIdUpdateTaskId) {
             nativeAd._appIdUpdateTaskId->stop();
@@ -117,6 +113,18 @@ public:
             nativeAd.impl = nil;
         }
         nativeAd = nil;
+    }
+
+    zfoverride
+    virtual void nativeAdAttach(ZF_IN ZFAdForBanner *ad) {
+        ZFUIRootWindow *window = ZFUIWindow::rootWindowForView(ad);
+        if(window) {
+            _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
+            _nativeAdWindowUpdate(nativeAd, (__bridge UIViewController *)window->nativeWindow());
+        }
+    }
+    zfoverride
+    virtual void nativeAdDetach(ZF_IN ZFAdForBanner *ad) {
     }
 
     zfoverride
@@ -148,30 +156,6 @@ public:
     }
 
 private:
-    static void _ownerWindowUpdateAttach(ZF_IN ZFAdForBanner *ad) {
-        zfobj<ZFObject> eventHolder;
-        ad->objectTag("_ZFP_ZFAdForBanner_sys_iOS_eventHolder", eventHolder);
-        ZFLISTENER_0(viewTreeInWindowOnUpdate
-                ) {
-            ZFAdForBanner *ad = zfargs.sender();
-            if(ad->viewTreeInWindow()) {
-                ZFUIRootWindow *window = ZFUIWindow::rootWindowForView(ad);
-                if(window) {
-                    _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
-                    _nativeAdWindowUpdate(nativeAd, (__bridge UIViewController *)window->nativeWindow());
-                }
-            }
-        } ZFLISTENER_END()
-        ZFObserverGroup(eventHolder, ad)
-            .observerAdd(ZFUIView::E_ViewTreeInWindowOnUpdate(), viewTreeInWindowOnUpdate, ZFLevelZFFrameworkPostNormal)
-            ;
-    }
-    static void _ownerWindowUpdateDetach(ZF_IN ZFAdForBanner *ad) {
-        zfauto eventHolder = ad->objectTagRemoveAndGet("_ZFP_ZFAdForBanner_sys_iOS_eventHolder");
-        if(eventHolder) {
-            ZFObserverGroupRemove(eventHolder);
-        }
-    }
     static void _nativeAdWindowUpdate(ZF_IN _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd, ZF_IN UIViewController *window) {
         if(window == nil) {
             ZFCoreCriticalShouldNotGoHere();

@@ -41,13 +41,10 @@ public:
                 );
         jobject ret = JNIUtilNewGlobalRef(jniEnv, tmp);
         JNIUtilDeleteLocalRef(jniEnv, tmp);
-        _ownerWindowUpdateAttach(ad);
         return ret;
     }
     zfoverride
     virtual void nativeAdDestroy(ZF_IN ZFAdForBanner *ad) {
-        _ownerWindowUpdateDetach(ad);
-
         JNIEnv *jniEnv = JNIGetJNIEnv();
         static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), "native_nativeAdDestroy",
             JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
@@ -57,6 +54,26 @@ public:
                 , (jobject)ad->nativeAd()
                 );
         JNIUtilDeleteGlobalRef(jniEnv, (jobject)ad->nativeAd());
+    }
+
+    zfoverride
+    virtual void nativeAdAttach(ZF_IN ZFAdForBanner *ad) {
+        ZFUIRootWindow *window = ZFUIWindow::rootWindowForView(ad);
+        if(window) {
+            JNIEnv *jniEnv = JNIGetJNIEnv();
+            static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), "native_nativeAdWindowUpdate",
+                JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
+                    .add(JNIType::S_object_Object())
+                    .add(JNIType::S_object_Object())
+                ).c_str());
+            JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), jmId
+                    , (jobject)ad->nativeAd()
+                    , (jobject)window->nativeWindow()
+                    );
+        }
+    }
+    zfoverride
+    virtual void nativeAdDetach(ZF_IN ZFAdForBanner *ad) {
     }
 
     zfoverride
@@ -79,40 +96,6 @@ public:
         jint jSizeBuf[2];
         JNIUtilGetIntArrayRegion(jniEnv, jSize, 0, 2, jSizeBuf);
         return ZFUISizeCreate((zffloat)jSizeBuf[0], (zffloat)jSizeBuf[1]);
-    }
-
-private:
-    void _ownerWindowUpdateAttach(ZF_IN ZFAdForBanner *ad) {
-        zfobj<ZFObject> eventHolder;
-        ad->objectTag("_ZFP_ZFAdForBanner_sys_Android_eventHolder", eventHolder);
-        ZFLISTENER_0(viewTreeInWindowOnUpdate
-                ) {
-            ZFAdForBanner *ad = zfargs.sender();
-            if(ad->viewTreeInWindow()) {
-                ZFUIRootWindow *window = ZFUIWindow::rootWindowForView(ad);
-                if(window) {
-                    JNIEnv *jniEnv = JNIGetJNIEnv();
-                    static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), "native_nativeAdWindowUpdate",
-                        JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
-                            .add(JNIType::S_object_Object())
-                            .add(JNIType::S_object_Object())
-                        ).c_str());
-                    JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForBanner(), jmId
-                            , (jobject)ad->nativeAd()
-                            , (jobject)window->nativeWindow()
-                            );
-                }
-            }
-        } ZFLISTENER_END()
-        ZFObserverGroup(eventHolder, ad)
-            .observerAdd(ZFUIView::E_ViewTreeInWindowOnUpdate(), viewTreeInWindowOnUpdate, ZFLevelZFFrameworkPostNormal)
-            ;
-    }
-    void _ownerWindowUpdateDetach(ZF_IN ZFAdForBanner *ad) {
-        zfauto eventHolder = ad->objectTagRemoveAndGet("_ZFP_ZFAdForBanner_sys_Android_eventHolder");
-        if(eventHolder) {
-            ZFObserverGroupRemove(eventHolder);
-        }
     }
 };
 ZFOBJECT_REGISTER(ZFAdForBannerImpl_AdMob)
