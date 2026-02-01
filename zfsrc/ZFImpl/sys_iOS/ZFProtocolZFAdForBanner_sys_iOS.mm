@@ -86,11 +86,11 @@ public:
                 , zfweakT<ZFAdForBanner>, ad
                 ) {
             zfbool success = zfargs.param0().to<v_zfbool *>()->zfv;
-            const zfstring &errorHint = zfargs.param1().to<v_zfstring *>()->zfv;
             _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForBanner *)ad->nativeAd();
             nativeAd._appIdUpdateTaskId = zfnull;
             if(!success) {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG
+                const zfstring &errorHint = zfargs.param1().to<v_zfstring *>()->zfv;
                 ZFLogTrim("[AdMob][banner] %s init fail: %s", nativeAd._adId, errorHint);
 #endif
                 return;
