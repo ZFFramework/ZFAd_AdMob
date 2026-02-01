@@ -35,6 +35,7 @@ public class ZFAdForSplash {
                     if (ZFAd.DEBUG) {
                         ZFAndroidLog.p("[AdMob][splash] %s init fail: %s", nativeAd._adId, errorHint);
                     }
+                    native_notifyAdOnError(zfjniPointerOwnerZFAd, errorHint);
                     return;
                 }
                 nativeAd._update();
