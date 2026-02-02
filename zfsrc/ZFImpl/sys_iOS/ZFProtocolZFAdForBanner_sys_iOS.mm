@@ -150,6 +150,16 @@ public:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG
             ZFLogTrim("[AdMob][banner] %s size update: %s (%s, %s)", nativeAd._adId, sizeHint.width, implSize.size.width, implSize.size.height);
 #endif
+            if(nativeAd.impl != nil) {
+                [nativeAd.impl removeFromSuperview];
+            }
+            nativeAd.impl = [GADBannerView new];
+            nativeAd.impl.translatesAutoresizingMaskIntoConstraints = NO;
+            nativeAd.impl.autoresizingMask = UIViewAutoresizingNone;
+            nativeAd.impl.delegate = nativeAd;
+            nativeAd.impl.adUnitID = ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId);
+            [nativeAd addSubview:nativeAd.impl];
+
             nativeAd.impl.adSize = implSize;
             [nativeAd.impl loadRequest:[GADRequest request]];
         }
