@@ -85,6 +85,16 @@ public class ZFAdForBanner extends FrameLayout {
             if (ZFAd.DEBUG) {
                 ZFAndroidLog.p("[AdMob][banner] %s size update: %s (%s %s)", nativeAdTmp._adId, widthHint, implSize.getWidth(), implSize.getHeight());
             }
+            if (nativeAdTmp.impl != null) {
+                if (nativeAdTmp.impl.getParent() != null) {
+                    ((ViewGroup) nativeAdTmp.impl.getParent()).removeView(nativeAdTmp.impl);
+                }
+            }
+            nativeAdTmp.impl = new AdView(nativeAdTmp._ownerWindow.get());
+            nativeAdTmp.impl.setAdListener(nativeAdTmp._implListener);
+            nativeAdTmp.impl.setAdUnitId(nativeAdTmp._adId);
+            nativeAdTmp.addView(nativeAdTmp.impl, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
             nativeAdTmp.impl.setAdSize(implSize);
             nativeAdTmp.impl.loadAd(new AdRequest.Builder().build());
         }
@@ -206,9 +216,9 @@ public class ZFAdForBanner extends FrameLayout {
 
         if (impl == null) {
             impl = new AdView(_ownerWindow.get());
-            this.addView(impl, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             impl.setAdListener(_implListener);
             impl.setAdUnitId(_adId);
+            this.addView(impl, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
         if (ZFAd.DEBUG) {
             ZFAndroidLog.p("[AdMob][banner] %s update", _adId);
