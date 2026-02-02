@@ -1,7 +1,6 @@
 package com.ZFFramework.ZFAd_AdMob;
 
 import android.app.Activity;
-import android.os.Build;
 
 import com.ZFFramework.NativeUtil.ZFAndroidLog;
 import com.ZFFramework.NativeUtil.ZFRunnable;
@@ -107,10 +106,6 @@ public class ZFAdForSplash {
                 _ownerWindow = null;
                 native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success);
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                _ownerWindow.get().overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0);
-            }
-            _ownerWindow.get().overridePendingTransition(0, 0);
         }
 
         @Override
@@ -181,7 +176,10 @@ public class ZFAdForSplash {
         } else {
             impl.setFullScreenContentCallback(_implListener);
             impl.show(_ownerWindow.get());
-            _ownerWindow.get().overridePendingTransition(0, 0);
+            _ownerWindow.get().overridePendingTransition(
+                    android.R.anim.fade_in
+                    , android.R.anim.fade_out
+            );
         }
     }
 
