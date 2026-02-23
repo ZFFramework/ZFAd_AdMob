@@ -82,6 +82,8 @@ defineReplace(ZFAddLib) {
 
 # ZF dependency
 $$ZFAddLib(0, ZFCore)
+$$ZFAddLib(0, ZFUtility)
+$$ZFAddLib(0, ZFAlgorithm)
 $$ZFAddLib(0, ZFUIKit)
 $$ZFAddLib(1, ZF_impl)
 $$ZFAddLib(0, ZFAd)
