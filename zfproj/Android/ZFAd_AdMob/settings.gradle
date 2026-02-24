@@ -22,3 +22,8 @@ dependencyResolutionManagement {
 rootProject.name = 'ZFAd_AdMob'
 include ':zflib'
 
+if (file('./zflib/zfprojConfig/zfprojConfig.xml').exists()) {
+    include ':zfprojConfig_ZFAd_AdMob'
+    project(':zfprojConfig_ZFAd_AdMob').projectDir = file('./zfprojConfigHelper')
+}
+
