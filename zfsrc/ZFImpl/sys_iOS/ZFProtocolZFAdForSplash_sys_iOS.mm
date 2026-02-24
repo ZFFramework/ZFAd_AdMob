@@ -14,6 +14,7 @@
 @property (nonatomic, assign) zfstring _adId;
 @property (nonatomic, assign) zfbool _nativeAdStarted;
 @property (nonatomic, weak) UIViewController *_ownerWindow;
+@property (nonatomic, assign) zfautoT<ZFTaskId> _loadTimeoutTaskId;
 @end
 @implementation _ZFP_ZFImpl_sys_iOS_ZFAdForSplash
 - (void)ad:(id<GADFullScreenPresentingAd>)ad didFailToPresentFullScreenContentWithError:(NSError *)error {
@@ -92,7 +93,7 @@ public:
                 ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
                 return;
             }
-            _update(nativeAd);
+            _update(ad);
         } ZFLISTENER_END()
         nativeAd._appIdUpdateTaskId = ZFImpl_sys_iOS_ZFAd_appIdUpdate(appId, onFinish);
 
@@ -119,11 +120,15 @@ public:
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         nativeAd._nativeAdStarted = zftrue;
         nativeAd._ownerWindow = (__bridge UIViewController *)window->nativeWindow();
-        _update(nativeAd);
+        _update(ad);
     }
 
 private:
-    static void _update(ZF_IN _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd) {
+    static void _update(ZF_IN zfweakT<ZFAdForSplash> const &ad) {
+        if(!ad) {
+            return;
+        }
+        _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         if(!nativeAd._nativeAdStarted
                 || nativeAd._appIdUpdateTaskId
         ) {
@@ -141,15 +146,46 @@ private:
         }
 
         if(nativeAd.impl == nil) {
+            zfobj<v_zfint> taskId(zfmRand());
+            if(nativeAd._loadTimeoutTaskId) {
+                nativeAd._loadTimeoutTaskId->stop();
+            }
+            ZFLISTENER_2(onTimeout
+                    , zfweakT<ZFAdForSplash>, ad
+                    , zfautoT<v_zfint>, taskId
+                    ) {
+                if(!ad) {
+                    return;
+                }
+                _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
+                nativeAd._loadTimeoutTaskId = zfnull;
+                ++(taskId->zfv);
+#if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
+                ZFLogTrim("[AdMob][splash] %s onAdLoadTimeout", nativeAd._adId);
+#endif
+                nativeAd.impl = nil;
+                nativeAd._nativeAdStarted = zffalse;
+                ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad, "load timeout");
+            } ZFLISTENER_END()
+            nativeAd._loadTimeoutTaskId = ZFTimerOnce(3000, onTimeout);
+
+            zfint taskIdRunning = taskId->zfv;
             [GADAppOpenAd loadWithAdUnitID:ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId)
                 request:[GADRequest request]
                 completionHandler:^(GADAppOpenAd *appOpenAd, NSError *error) {
+                    if(taskIdRunning != taskId->zfv) {
+                        return;
+                    }
+                    if(nativeAd._loadTimeoutTaskId) {
+                        nativeAd._loadTimeoutTaskId->stop();
+                        nativeAd._loadTimeoutTaskId = zfnull;
+                    }
                     if(!error) {
                         nativeAd.impl = appOpenAd;
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
                         ZFLogTrim("[AdMob][splash] %s onAdLoaded", nativeAd._adId);
 #endif
-                        _update(nativeAd);
+                        _update(ad);
                     }
                     else {
                         zfstring errorHint;
