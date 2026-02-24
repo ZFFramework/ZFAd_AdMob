@@ -3,6 +3,8 @@ package com.ZFFramework.ZFAd_AdMob;
 import android.app.Activity;
 
 import com.ZFFramework.NativeUtil.ZFAndroidLog;
+import com.ZFFramework.NativeUtil.ZFAndroidPost;
+import com.ZFFramework.NativeUtil.ZFAndroidValue;
 import com.ZFFramework.NativeUtil.ZFRunnable;
 import com.ZFFramework.NativeUtil.ZFTaskId;
 import com.ZFFramework.ZF_impl.ZFResultType;
@@ -76,6 +78,7 @@ public class ZFAdForSplash {
     private String _adId = null;
     private boolean _nativeAdStarted = false;
     private WeakReference<Activity> _ownerWindow = null;
+    private int _loadTimeoutTaskId = -1;
 
     private final FullScreenContentCallback _implListener = new FullScreenContentCallback() {
         @Override
@@ -146,6 +149,24 @@ public class ZFAdForSplash {
         }
 
         if (impl == null) {
+            ZFAndroidValue<Integer> taskId = new ZFAndroidValue<>((int) (Math.random() * 65536));
+            if (_loadTimeoutTaskId != -1) {
+                ZFAndroidPost.cancel(_loadTimeoutTaskId);
+            }
+            _loadTimeoutTaskId = ZFAndroidPost.run(new Runnable() {
+                @Override
+                public void run() {
+                    _loadTimeoutTaskId = -1;
+                    ++(taskId.value);
+                    if (ZFAd.DEBUG) {
+                        ZFAndroidLog.p("[AdMob][splash] %s onAdLoadTimeout", _adId);
+                    }
+                    impl = null;
+                    _nativeAdStarted = false;
+                    native_notifyAdOnError(zfjniPointerOwnerZFAd, "load timeout");
+                }
+            }, 3000);
+            int taskIdRunning = taskId.value;
             AppOpenAd.load(
                     _ownerWindow.get()
                     , _adId
@@ -154,6 +175,13 @@ public class ZFAdForSplash {
                         @Override
                         public void onAdLoaded(AppOpenAd appOpenAd) {
                             super.onAdLoaded(appOpenAd);
+                            if (taskIdRunning != taskId.value) {
+                                return;
+                            }
+                            if (_loadTimeoutTaskId != -1) {
+                                ZFAndroidPost.cancel(_loadTimeoutTaskId);
+                                _loadTimeoutTaskId = -1;
+                            }
                             impl = appOpenAd;
                             if (ZFAd.DEBUG) {
                                 ZFAndroidLog.p("[AdMob][splash] %s onAdLoaded", _adId);
@@ -164,6 +192,13 @@ public class ZFAdForSplash {
                         @Override
                         public void onAdFailedToLoad(LoadAdError error) {
                             super.onAdFailedToLoad(error);
+                            if (taskIdRunning != taskId.value) {
+                                return;
+                            }
+                            if (_loadTimeoutTaskId != -1) {
+                                ZFAndroidPost.cancel(_loadTimeoutTaskId);
+                                _loadTimeoutTaskId = -1;
+                            }
                             if (ZFAd.DEBUG) {
                                 ZFAndroidLog.p("[AdMob][splash] %s onAdFailedToLoad: %s", _adId, error);
                             }
