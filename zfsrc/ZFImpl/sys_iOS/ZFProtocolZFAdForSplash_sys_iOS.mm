@@ -185,7 +185,7 @@ private:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
                         ZFLogTrim("[AdMob][splash] %s onAdLoaded", nativeAd._adId);
 #endif
-                        _update(ad);
+                        _update(nativeAd._ad);
                     }
                     else {
                         zfstring errorHint;
