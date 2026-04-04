@@ -58,7 +58,13 @@ public class ZFAdForBanner extends FrameLayout {
             nativeAdTmp._appIdUpdateTaskId = ZFTaskId.INVALID;
         }
         nativeAdTmp.zfjniPointerOwnerZFAd = -1;
-        nativeAdTmp.impl = null;
+        if (nativeAdTmp.impl != null) {
+            if (nativeAdTmp.impl.getParent() != null) {
+                ((ViewGroup) nativeAdTmp.impl.getParent()).removeView(nativeAdTmp.impl);
+            }
+            nativeAdTmp.impl.destroy();
+            nativeAdTmp.impl = null;
+        }
     }
 
     public static int[] native_nativeAdMeasure(
