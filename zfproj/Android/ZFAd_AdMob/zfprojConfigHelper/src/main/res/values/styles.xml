@@ -1,6 +1,12 @@
 <resources>
 
     <style name="ZFAdForSplashTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:fitsSystemWindows">true</item>
         <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
         <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
