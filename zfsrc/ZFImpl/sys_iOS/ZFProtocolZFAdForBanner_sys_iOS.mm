@@ -1,7 +1,7 @@
 #include "ZFImpl_sys_iOS_ZFAd_AdMob.h"
 #include "ZFAd/protocol/ZFProtocolZFAdForBanner.h"
 
-// #define _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG 1
+#define _ZFP_ZFImpl_sys_iOS_ZFAdForBanner_DEBUG 1
 
 #if ZF_ENV_sys_iOS
 

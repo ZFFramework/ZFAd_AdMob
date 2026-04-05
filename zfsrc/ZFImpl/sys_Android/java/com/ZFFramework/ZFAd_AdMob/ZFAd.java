@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class ZFAd {
 
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
 
     // callback(Boolean success, String errorHint)
     public static int appIdUpdate(String appId, ZFRunnable.P2<Boolean, String> callback) {
