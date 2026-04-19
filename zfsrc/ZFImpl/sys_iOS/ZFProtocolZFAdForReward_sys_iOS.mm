@@ -228,7 +228,7 @@ private:
                     }
                 }];
         }
-        else if(nativeAd._nativeAdLoadFlag) {
+        else if(nativeAd._nativeAdStartFlag) {
             nativeAd.impl.fullScreenContentDelegate = nativeAd;
             [nativeAd.impl presentFromRootViewController:nativeAd._ownerWindow
                                 userDidEarnRewardHandler:^{
