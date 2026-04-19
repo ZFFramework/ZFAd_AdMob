@@ -257,7 +257,7 @@ public class ZFAdForReward {
                 @Override
                 public void onUserEarnedReward(RewardItem rewardItem) {
                     if (ZFAd.DEBUG) {
-                        ZFAndroidLog.p("[AdMob][reward] %s onAdGotReward: %s", _adId);
+                        ZFAndroidLog.p("[AdMob][reward] %s onAdGotReward", _adId);
                     }
                     _nativeAdShowFlag = false;
                     native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success);
