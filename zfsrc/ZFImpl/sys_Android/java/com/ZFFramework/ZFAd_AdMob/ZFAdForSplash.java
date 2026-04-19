@@ -37,6 +37,7 @@ public class ZFAdForSplash {
                     if (ZFAd.DEBUG) {
                         ZFAndroidLog.p("[AdMob][splash] %s init fail: %s", nativeAd._adId, errorHint);
                     }
+                    nativeAd._nativeAdShowFlag = false;
                     native_notifyAdOnError(zfjniPointerOwnerZFAd, errorHint);
                     return;
                 }
@@ -53,13 +54,29 @@ public class ZFAdForSplash {
             nativeAdTmp._appIdUpdateTaskId = ZFTaskId.INVALID;
         }
         nativeAdTmp.zfjniPointerOwnerZFAd = -1;
-        nativeAdTmp._nativeAdStarted = false;
+        nativeAdTmp._nativeAdStartFlag = false;
         nativeAdTmp.impl = null;
+    }
+
+    public static void native_nativeAdLoad(Object nativeAd, Object window) {
+        ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
+        nativeAdTmp._nativeAdLoadFlag = true;
+        nativeAdTmp._nativeAdShowFlag = false;
+        nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
+        nativeAdTmp.impl = null;
+        nativeAdTmp._update();
+    }
+
+    public static boolean native_nativeAdLoaded(Object nativeAd) {
+        ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
+        return nativeAdTmp._nativeAdLoadTime != 0
+                && System.currentTimeMillis() - nativeAdTmp._nativeAdLoadTime < 60 * 60 * 1000
+                ;
     }
 
     public static void native_nativeAdStart(Object nativeAd, Object window) {
         ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
-        nativeAdTmp._nativeAdStarted = true;
+        nativeAdTmp._nativeAdStartFlag = true;
         nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp._update();
     }
@@ -71,12 +88,17 @@ public class ZFAdForSplash {
 
     public static native void native_notifyAdOnClick(long zfjniPointerOwnerZFAd);
 
+    public static native void native_notifyAdOnLoad(long zfjniPointerOwnerZFAd);
+
     public static native void native_notifyAdOnStop(long zfjniPointerOwnerZFAd, int resultType);
 
     // ============================================================
     private int _appIdUpdateTaskId = ZFTaskId.INVALID;
     private String _adId = null;
-    private boolean _nativeAdStarted = false;
+    private long _nativeAdLoadTime = 0;
+    private boolean _nativeAdLoadFlag = false;
+    private boolean _nativeAdStartFlag = false;
+    private boolean _nativeAdShowFlag = false;
     private WeakReference<Activity> _ownerWindow = null;
     private int _loadTimeoutTaskId = -1;
 
@@ -87,7 +109,8 @@ public class ZFAdForSplash {
                 ZFAndroidLog.p("[AdMob][splash] %s onAdFailedToShowFullScreenContent: %s", _adId, error);
             }
             if (zfjniPointerOwnerZFAd != -1) {
-                _nativeAdStarted = false;
+                _nativeAdStartFlag = false;
+                _nativeAdShowFlag = false;
                 native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
             }
         }
@@ -105,7 +128,8 @@ public class ZFAdForSplash {
                 ZFAndroidLog.p("[AdMob][splash] %s onAdDismissedFullScreenContent", _adId);
             }
             if (zfjniPointerOwnerZFAd != -1) {
-                _nativeAdStarted = false;
+                _nativeAdStartFlag = false;
+                _nativeAdShowFlag = false;
                 _ownerWindow = null;
                 native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success);
             }
@@ -133,13 +157,14 @@ public class ZFAdForSplash {
     };
 
     private void _update() {
-        if (!_nativeAdStarted
-                || _appIdUpdateTaskId != ZFTaskId.INVALID
+        if (_appIdUpdateTaskId != ZFTaskId.INVALID
+                || (!_nativeAdLoadFlag && !_nativeAdStartFlag)
         ) {
             return;
         }
-        if (_ownerWindow == null || _ownerWindow.get() == null) {
-            _nativeAdStarted = false;
+        if (_nativeAdStartFlag && (_ownerWindow == null || _ownerWindow.get() == null)) {
+            _nativeAdStartFlag = false;
+            _nativeAdShowFlag = false;
             String errorHint = String.format("[AdMob][splash] %s unable to obtain window", _adId);
             if (ZFAd.DEBUG) {
                 ZFAndroidLog.p(errorHint);
@@ -162,10 +187,15 @@ public class ZFAdForSplash {
                         ZFAndroidLog.p("[AdMob][splash] %s onAdLoadTimeout", _adId);
                     }
                     impl = null;
-                    _nativeAdStarted = false;
+                    _nativeAdStartFlag = false;
+                    _nativeAdShowFlag = false;
+                    if (_nativeAdLoadFlag) {
+                        _nativeAdLoadFlag = false;
+                        native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
+                    }
                     native_notifyAdOnError(zfjniPointerOwnerZFAd, "load timeout");
                 }
-            }, 3000);
+            }, 10000);
             int taskIdRunning = taskId.value;
             AppOpenAd.load(
                     _ownerWindow.get()
@@ -183,9 +213,11 @@ public class ZFAdForSplash {
                                 _loadTimeoutTaskId = -1;
                             }
                             impl = appOpenAd;
+                            _nativeAdLoadTime = System.currentTimeMillis();
                             if (ZFAd.DEBUG) {
                                 ZFAndroidLog.p("[AdMob][splash] %s onAdLoaded", _adId);
                             }
+                            native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
                             _update();
                         }
 
@@ -203,12 +235,18 @@ public class ZFAdForSplash {
                                 ZFAndroidLog.p("[AdMob][splash] %s onAdFailedToLoad: %s", _adId, error);
                             }
                             impl = null;
-                            _nativeAdStarted = false;
+                            _nativeAdStartFlag = false;
+                            _nativeAdShowFlag = false;
+                            if (_nativeAdLoadFlag) {
+                                _nativeAdLoadFlag = false;
+                                native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
+                            }
                             native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
                         }
                     }
             );
-        } else {
+        } else if (_nativeAdStartFlag && !_nativeAdShowFlag) {
+            _nativeAdShowFlag = true;
             impl.setFullScreenContentCallback(_implListener);
             impl.show(_ownerWindow.get());
             _ownerWindow.get().overridePendingTransition(

@@ -15,11 +15,14 @@
 @property (nonatomic, assign) zftimet _nativeAdLoadTime;
 @property (nonatomic, assign) zfbool _nativeAdLoadFlag;
 @property (nonatomic, assign) zfbool _nativeAdStartFlag;
+@property (nonatomic, assign) zfbool _nativeAdShowFlag;
 @property (nonatomic, weak) UIViewController *_ownerWindow;
 @property (nonatomic, assign) zfautoT<ZFTaskId> _loadTimeoutTaskId;
 @end
 @implementation _ZFP_ZFImpl_sys_iOS_ZFAdForReward
 - (void)ad:(id<GADFullScreenPresentingAd>)ad didFailToPresentFullScreenContentWithError:(NSError *)error {
+    self._nativeAdStartFlag = zffalse;
+    self._nativeAdShowFlag = zffalse;
     zfstring errorHint;
     ZFImpl_sys_iOS_zfstringFromNSString(errorHint, error.description);
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
@@ -39,6 +42,7 @@
     ZFLogTrim("[AdMob][reward] %s adDidDismissFullScreenContent", self._adId);
 #endif
     self._nativeAdStartFlag = zffalse;
+    self._nativeAdShowFlag = zffalse;
     self._ownerWindow = nil;
     ZFAdForRewardImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Success);
 }
@@ -92,6 +96,7 @@ public:
                           , errorHint
                           );
 #endif
+                nativeAd._nativeAdShowFlag = zffalse;
                 ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
                 return;
             }
@@ -119,6 +124,8 @@ public:
     virtual void nativeAdLoad(ZF_IN ZFAdForReward *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForReward *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForReward *)ad->nativeAd();
         nativeAd._nativeAdLoadFlag = zftrue;
+        nativeAd._nativeAdShowFlag = zffalse;
+        nativeAd._ownerWindow = (__bridge UIViewController *)ad->window()->nativeWindow();
         nativeAd.impl.fullScreenContentDelegate = nil;
         nativeAd.impl = nil;
         _update(ad);
@@ -132,13 +139,10 @@ public:
     }
 
     zfoverride
-    virtual void nativeAdStart(
-            ZF_IN ZFAdForReward *ad
-            , ZF_IN ZFUIRootWindow *window
-            ) {
+    virtual void nativeAdStart(ZF_IN ZFAdForReward *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForReward *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForReward *)ad->nativeAd();
         nativeAd._nativeAdStartFlag = zftrue;
-        nativeAd._ownerWindow = (__bridge UIViewController *)window->nativeWindow();
+        nativeAd._ownerWindow = (__bridge UIViewController *)ad->window()->nativeWindow();
         _update(ad);
     }
 
@@ -155,6 +159,7 @@ private:
         }
         if(nativeAd._nativeAdStartFlag && nativeAd._ownerWindow == nil) {
             nativeAd._nativeAdStartFlag = zffalse;
+            nativeAd._nativeAdShowFlag = zffalse;
             zfstring errorHint;
             zfstringAppend(errorHint, "[AdMob][reward] %s unable to obtain window", nativeAd._adId);
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
@@ -184,6 +189,7 @@ private:
 #endif
                 nativeAd.impl = nil;
                 nativeAd._nativeAdStartFlag = zffalse;
+                nativeAd._nativeAdShowFlag = zffalse;
                 if(nativeAd._nativeAdLoadFlag) {
                     nativeAd._nativeAdLoadFlag = zffalse;
                     ZFAdForRewardImpl::implForAd(ad)->notifyAdOnLoad(ad);
@@ -209,6 +215,7 @@ private:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
                         ZFLogTrim("[AdMob][reward] %s onAdLoaded", nativeAd._adId);
 #endif
+                        ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
                         _update(nativeAd._ad);
                     }
                     else {
@@ -220,6 +227,7 @@ private:
                         nativeAd.impl.fullScreenContentDelegate = nil;
                         nativeAd.impl = nil;
                         nativeAd._nativeAdStartFlag = zffalse;
+                        nativeAd._nativeAdShowFlag = zffalse;
                         if(nativeAd._nativeAdLoadFlag) {
                             nativeAd._nativeAdLoadFlag = zffalse;
                             ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
@@ -228,13 +236,15 @@ private:
                     }
                 }];
         }
-        else if(nativeAd._nativeAdStartFlag) {
+        else if(nativeAd._nativeAdStartFlag && !nativeAd._nativeAdStartFlag) {
+            nativeAd._nativeAdStartFlag = zftrue;
             nativeAd.impl.fullScreenContentDelegate = nativeAd;
             [nativeAd.impl presentFromRootViewController:nativeAd._ownerWindow
                                 userDidEarnRewardHandler:^{
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
                 ZFLogTrim("[AdMob][reward] %s onAdGotReward", nativeAd._adId);
 #endif
+                nativeAd._nativeAdStartFlag = zffalse;
                 ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Success);
             }];
         }

@@ -1,23 +1,23 @@
 #include "ZFImpl_sys_Android_ZFAd_AdMob.h"
-#include "ZFAd/protocol/ZFProtocolZFAdForSplash.h"
+#include "ZFAd/protocol/ZFProtocolZFAdForReward.h"
 
-// #define _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG 1
+// #define _ZFP_ZFImpl_sys_Android_ZFAdForReward_DEBUG 1
 
 #if ZF_ENV_sys_Android
 ZF_NAMESPACE_GLOBAL_BEGIN
 
-#define ZFImpl_sys_Android_JNI_ID_ZFAdForSplash ZFImpl_sys_Android_JNI_ID(ZFAd_1AdMob_ZFAdForSplash)
-#define ZFImpl_sys_Android_JNI_NAME_ZFAdForSplash ZFImpl_sys_Android_JNI_NAME(ZFAd_AdMob.ZFAdForSplash)
-ZFImpl_sys_Android_jclass_DEFINE(ZFImpl_sys_Android_jclassZFAdForSplash, ZFImpl_sys_Android_JNI_NAME_ZFAdForSplash)
+#define ZFImpl_sys_Android_JNI_ID_ZFAdForReward ZFImpl_sys_Android_JNI_ID(ZFAd_1AdMob_ZFAdForReward)
+#define ZFImpl_sys_Android_JNI_NAME_ZFAdForReward ZFImpl_sys_Android_JNI_NAME(ZFAd_AdMob.ZFAdForReward)
+ZFImpl_sys_Android_jclass_DEFINE(ZFImpl_sys_Android_jclassZFAdForReward, ZFImpl_sys_Android_JNI_NAME_ZFAdForReward)
 
-zfclass ZFAdForSplashImpl_AdMob : zfextend ZFObject, zfimplement ZFAdForSplashImpl {
-    ZFOBJECT_DECLARE(ZFAdForSplashImpl_AdMob, ZFObject)
-    ZFIMPLEMENT_DECLARE(ZFAdForSplashImpl)
+zfclass ZFAdForRewardImpl_AdMob : zfextend ZFObject, zfimplement ZFAdForRewardImpl {
+    ZFOBJECT_DECLARE(ZFAdForRewardImpl_AdMob, ZFObject)
+    ZFIMPLEMENT_DECLARE(ZFAdForRewardImpl)
 
 public:
     zfoverride
     virtual void *nativeAdCreate(
-            ZF_IN ZFAdForSplash *ad
+            ZF_IN ZFAdForReward *ad
             , ZF_IN const zfstring &appId
             , ZF_IN const zfstring &adId
             ) {
@@ -29,13 +29,13 @@ public:
         }
 
         JNIEnv *jniEnv = JNIGetJNIEnv();
-        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), "native_nativeAdCreate",
+        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), "native_nativeAdCreate",
             JNIGetMethodSig(JNIType::S_object_Object(), JNIParamTypeContainer()
                 .add(JNIPointerJNIType)
                 .add(JNIType::S_object_String())
                 .add(JNIType::S_object_String())
             ).c_str());
-        jobject tmp = JNIUtilCallStaticObjectMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId
+        jobject tmp = JNIUtilCallStaticObjectMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), jmId
                 , JNIConvertZFObjectToJNIType(jniEnv, ad)
                 , ZFImpl_sys_Android_zfstringToString(appId)
                 , ZFImpl_sys_Android_zfstringToString(adId)
@@ -45,123 +45,123 @@ public:
         return ret;
     }
     zfoverride
-    virtual void nativeAdDestroy(ZF_IN ZFAdForSplash *ad) {
+    virtual void nativeAdDestroy(ZF_IN ZFAdForReward *ad) {
         JNIEnv *jniEnv = JNIGetJNIEnv();
-        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), "native_nativeAdDestroy",
+        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), "native_nativeAdDestroy",
             JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
             ).c_str());
-        JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId
+        JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), jmId
                 , (jobject)ad->nativeAd()
                 );
         JNIUtilDeleteGlobalRef(jniEnv, (jobject)ad->nativeAd());
     }
 
     zfoverride
-    virtual void nativeAdLoad(ZF_IN ZFAdForSplash *ad) {
+    virtual void nativeAdLoad(ZF_IN ZFAdForReward *ad) {
         JNIEnv *jniEnv = JNIGetJNIEnv();
-        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), "native_nativeAdLoad",
+        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), "native_nativeAdLoad",
             JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
                 .add(JNIType::S_object_Object())
             ).c_str());
-        JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId
+        JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), jmId
                 , (jobject)ad->nativeAd()
                 , (jobject)ad->window()->nativeWindow()
                 );
     }
     zfoverride
-    virtual zfbool nativeAdLoaded(ZF_IN ZFAdForSplash *ad) {
+    virtual zfbool nativeAdLoaded(ZF_IN ZFAdForReward *ad) {
         JNIEnv *jniEnv = JNIGetJNIEnv();
-        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), "native_nativeAdLoaded",
-            JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
+        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), "native_nativeAdLoaded",
+            JNIGetMethodSig(JNIType::S_boolean(), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
             ).c_str());
-        return (zfbool)JNIUtilCallStaticBooleanMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId
+        return (zfbool)JNIUtilCallStaticBooleanMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), jmId
             , (jobject)ad->nativeAd()
             );
     }
 
     zfoverride
-    virtual void nativeAdStart(ZF_IN ZFAdForSplash *ad) {
+    virtual void nativeAdStart(ZF_IN ZFAdForReward *ad) {
         JNIEnv *jniEnv = JNIGetJNIEnv();
-        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), "native_nativeAdStart",
+        static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), "native_nativeAdStart",
             JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
                 .add(JNIType::S_object_Object())
             ).c_str());
-        JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId
+        JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForReward(), jmId
                 , (jobject)ad->nativeAd()
                 , (jobject)ad->window()->nativeWindow()
                 );
     }
 };
-ZFOBJECT_REGISTER(ZFAdForSplashImpl_AdMob)
+ZFOBJECT_REGISTER(ZFAdForRewardImpl_AdMob)
 
 ZF_NAMESPACE_GLOBAL_END
 
 // ============================================================
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
+JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForReward
         , void, native_1notifyAdOnError
         , JNIPointer zfjniPointerOwnerZFAd
         , jstring errorHint
         ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
+#if _ZFP_ZFImpl_sys_Android_ZFAdForReward_DEBUG
     ZFLogTrim("%s onError: %s", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd), ZFImpl_sys_Android_zfstringFromString(errorHint));
 #endif
-    ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad
+    ZFAdForReward *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
+    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnError(ad
             , ZFImpl_sys_Android_zfstringFromString(errorHint)
             );
 }
 JNI_METHOD_DECLARE_END()
 
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
+JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForReward
         , void, native_1notifyAdOnDisplay
         , JNIPointer zfjniPointerOwnerZFAd
         ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
+#if _ZFP_ZFImpl_sys_Android_ZFAdForReward_DEBUG
     ZFLogTrim("%s onDisplay", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd));
 #endif
-    ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnDisplay(ad);
+    ZFAdForReward *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
+    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnDisplay(ad);
 }
 JNI_METHOD_DECLARE_END()
 
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
+JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForReward
         , void, native_1notifyAdOnClick
         , JNIPointer zfjniPointerOwnerZFAd
         ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
+#if _ZFP_ZFImpl_sys_Android_ZFAdForReward_DEBUG
     ZFLogTrim("%s onClick", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd));
 #endif
-    ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnClick(ad);
+    ZFAdForReward *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
+    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnClick(ad);
 }
 JNI_METHOD_DECLARE_END()
 
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
+JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForReward
         , void, native_1notifyAdOnLoad
         , JNIPointer zfjniPointerOwnerZFAd
         ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
+#if _ZFP_ZFImpl_sys_Android_ZFAdForReward_DEBUG
     ZFLogTrim("%s onLoad", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd));
 #endif
-    ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnLoad(ad);
+    ZFAdForReward *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
+    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnLoad(ad);
 }
 JNI_METHOD_DECLARE_END()
 
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
+JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForReward
         , void, native_1notifyAdOnStop
         , JNIPointer zfjniPointerOwnerZFAd
         , jint resultType
         ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
+#if _ZFP_ZFImpl_sys_Android_ZFAdForReward_DEBUG
     ZFLogTrim("%s onStop", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd), (ZFResultType)resultType);
 #endif
-    ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnStop(ad
+    ZFAdForReward *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
+    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnStop(ad
             , (ZFResultType)resultType
             );
 }
