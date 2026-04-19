@@ -54,7 +54,9 @@ public class ZFAdForSplash {
             nativeAdTmp._appIdUpdateTaskId = ZFTaskId.INVALID;
         }
         nativeAdTmp.zfjniPointerOwnerZFAd = -1;
+        nativeAdTmp._nativeAdLoadFlag = false;
         nativeAdTmp._nativeAdStartFlag = false;
+        nativeAdTmp._nativeAdShowFlag = false;
         nativeAdTmp.impl = null;
     }
 

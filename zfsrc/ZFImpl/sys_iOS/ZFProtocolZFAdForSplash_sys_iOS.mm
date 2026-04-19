@@ -113,7 +113,9 @@ public:
             nativeAd._appIdUpdateTaskId->stop();
             nativeAd._appIdUpdateTaskId = zfnull;
         }
+        nativeAd._nativeAdLoadFlag = zffalse;
         nativeAd._nativeAdStartFlag = zffalse;
+        nativeAd._nativeAdShowFlag = zffalse;
         nativeAd.impl.fullScreenContentDelegate = nil;
         nativeAd.impl = nil;
         nativeAd = nil;
@@ -123,6 +125,7 @@ public:
     virtual void nativeAdLoad(ZF_IN ZFAdForSplash *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         nativeAd._nativeAdLoadFlag = zftrue;
+        nativeAd._nativeAdShowFlag = zftrue;
         nativeAd._ownerWindow = (__bridge UIViewController *)ad->window()->nativeWindow();
         nativeAd.impl.fullScreenContentDelegate = nil;
         nativeAd.impl = nil;
@@ -151,7 +154,7 @@ private:
         }
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         if(nativeAd._appIdUpdateTaskId
-                || (!nativeAd._nativeAdLoadFlag && !nativeAd._nativeAdStartFlag)
+                || (!nativeAd._nativeAdLoadFlag && !nativeAd._nativeAdShowFlag)
         ) {
             return;
         }
