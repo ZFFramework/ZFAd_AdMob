@@ -189,7 +189,7 @@ private:
                 }
                 ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad, "load timeout");
             } ZFLISTENER_END()
-            nativeAd._loadTimeoutTaskId = ZFTimerOnce(3000, onTimeout);
+            nativeAd._loadTimeoutTaskId = ZFTimerOnce(10000, onTimeout);
 
             zfint taskIdRunning = taskId->zfv;
             [GADAppOpenAd loadWithAdUnitID:ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId)
