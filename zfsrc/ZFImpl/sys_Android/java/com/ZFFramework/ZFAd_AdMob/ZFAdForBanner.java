@@ -42,7 +42,7 @@ public class ZFAdForBanner extends FrameLayout {
                     if (ZFAd.DEBUG) {
                         ZFAndroidLog.p("[AdMob][banner] %s init fail: %s", nativeAd._adId, errorHint);
                     }
-                    native_notifyAdOnError(zfjniPointerOwnerZFAd, errorHint);
+                    native_notifyAdOnError(nativeAd.zfjniPointerOwnerZFAd, errorHint);
                     return;
                 }
                 nativeAd._update();

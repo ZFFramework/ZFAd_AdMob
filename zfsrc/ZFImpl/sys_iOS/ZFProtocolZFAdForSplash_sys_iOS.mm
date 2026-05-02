@@ -113,6 +113,10 @@ public:
             nativeAd._appIdUpdateTaskId->stop();
             nativeAd._appIdUpdateTaskId = zfnull;
         }
+        if(nativeAd._loadTimeoutTaskId) {
+            nativeAd._loadTimeoutTaskId->stop();
+            nativeAd._loadTimeoutTaskId = zfnull;
+        }
         nativeAd._nativeAdLoadFlag = zffalse;
         nativeAd._nativeAdStartFlag = zffalse;
         nativeAd._nativeAdShowFlag = zffalse;
@@ -195,7 +199,9 @@ private:
                     nativeAd._nativeAdLoadFlag = zffalse;
                     ZFAdForSplashImpl::implForAd(ad)->notifyAdOnLoad(ad);
                 }
-                ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad, "load timeout");
+                if(ad) {
+                    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad, "load timeout");
+                }
             } ZFLISTENER_END()
             nativeAd._loadTimeoutTaskId = ZFTimerOnce(10000, onTimeout);
 
@@ -233,7 +239,9 @@ private:
                             nativeAd._nativeAdLoadFlag = zffalse;
                             ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
                         }
-                        ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                        if(nativeAd._ad) {
+                            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                        }
                     }
                 }];
         }

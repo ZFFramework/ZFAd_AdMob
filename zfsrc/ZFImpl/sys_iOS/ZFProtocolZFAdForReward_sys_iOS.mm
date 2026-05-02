@@ -113,6 +113,10 @@ public:
             nativeAd._appIdUpdateTaskId->stop();
             nativeAd._appIdUpdateTaskId = zfnull;
         }
+        if(nativeAd._loadTimeoutTaskId) {
+            nativeAd._loadTimeoutTaskId->stop();
+            nativeAd._loadTimeoutTaskId = zfnull;
+        }
         nativeAd._nativeAdLoadFlag = zffalse;
         nativeAd._nativeAdStartFlag = zffalse;
         nativeAd._nativeAdShowFlag = zffalse;

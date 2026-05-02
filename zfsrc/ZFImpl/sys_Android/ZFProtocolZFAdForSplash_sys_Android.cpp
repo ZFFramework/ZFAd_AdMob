@@ -74,7 +74,7 @@ public:
     virtual zfbool nativeAdLoaded(ZF_IN ZFAdForSplash *ad) {
         JNIEnv *jniEnv = JNIGetJNIEnv();
         static jmethodID jmId = JNIUtilGetStaticMethodID(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), "native_nativeAdLoaded",
-            JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
+            JNIGetMethodSig(JNIType::S_boolean(), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
             ).c_str());
         return (zfbool)JNIUtilCallStaticBooleanMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId

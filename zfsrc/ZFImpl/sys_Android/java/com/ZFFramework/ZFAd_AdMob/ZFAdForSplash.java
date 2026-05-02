@@ -38,7 +38,7 @@ public class ZFAdForSplash {
                         ZFAndroidLog.p("[AdMob][splash] %s init fail: %s", nativeAd._adId, errorHint);
                     }
                     nativeAd._nativeAdShowFlag = false;
-                    native_notifyAdOnError(zfjniPointerOwnerZFAd, errorHint);
+                    native_notifyAdOnError(nativeAd.zfjniPointerOwnerZFAd, errorHint);
                     return;
                 }
                 nativeAd._update();
@@ -52,6 +52,10 @@ public class ZFAdForSplash {
         if (nativeAdTmp._appIdUpdateTaskId != ZFTaskId.INVALID) {
             ZFAd.appIdUpdateCancel(nativeAdTmp._appIdUpdateTaskId);
             nativeAdTmp._appIdUpdateTaskId = ZFTaskId.INVALID;
+        }
+        if (nativeAdTmp._loadTimeoutTaskId != ZFTaskId.INVALID) {
+            ZFAndroidPost.cancel(nativeAdTmp._loadTimeoutTaskId);
+            nativeAdTmp._loadTimeoutTaskId = ZFTaskId.INVALID;
         }
         nativeAdTmp.zfjniPointerOwnerZFAd = -1;
         nativeAdTmp._nativeAdLoadFlag = false;
@@ -102,7 +106,7 @@ public class ZFAdForSplash {
     private boolean _nativeAdStartFlag = false;
     private boolean _nativeAdShowFlag = false;
     private WeakReference<Activity> _ownerWindow = null;
-    private int _loadTimeoutTaskId = -1;
+    private int _loadTimeoutTaskId = ZFTaskId.INVALID;
 
     private final FullScreenContentCallback _implListener = new FullScreenContentCallback() {
         @Override
@@ -177,13 +181,13 @@ public class ZFAdForSplash {
 
         if (impl == null) {
             ZFAndroidValue<Integer> taskId = new ZFAndroidValue<>((int) (Math.random() * 65536));
-            if (_loadTimeoutTaskId != -1) {
+            if (_loadTimeoutTaskId != ZFTaskId.INVALID) {
                 ZFAndroidPost.cancel(_loadTimeoutTaskId);
             }
             _loadTimeoutTaskId = ZFAndroidPost.run(new Runnable() {
                 @Override
                 public void run() {
-                    _loadTimeoutTaskId = -1;
+                    _loadTimeoutTaskId = ZFTaskId.INVALID;
                     ++(taskId.value);
                     if (ZFAd.DEBUG) {
                         ZFAndroidLog.p("[AdMob][splash] %s onAdLoadTimeout", _adId);
@@ -195,7 +199,9 @@ public class ZFAdForSplash {
                         _nativeAdLoadFlag = false;
                         native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
                     }
-                    native_notifyAdOnError(zfjniPointerOwnerZFAd, "load timeout");
+                    if (zfjniPointerOwnerZFAd != -1) {
+                        native_notifyAdOnError(zfjniPointerOwnerZFAd, "load timeout");
+                    }
                 }
             }, 10000);
             int taskIdRunning = taskId.value;
@@ -210,9 +216,9 @@ public class ZFAdForSplash {
                             if (taskIdRunning != taskId.value) {
                                 return;
                             }
-                            if (_loadTimeoutTaskId != -1) {
+                            if (_loadTimeoutTaskId != ZFTaskId.INVALID) {
                                 ZFAndroidPost.cancel(_loadTimeoutTaskId);
-                                _loadTimeoutTaskId = -1;
+                                _loadTimeoutTaskId = ZFTaskId.INVALID;
                             }
                             impl = appOpenAd;
                             _nativeAdLoadTime = System.currentTimeMillis();
@@ -229,9 +235,9 @@ public class ZFAdForSplash {
                             if (taskIdRunning != taskId.value) {
                                 return;
                             }
-                            if (_loadTimeoutTaskId != -1) {
+                            if (_loadTimeoutTaskId != ZFTaskId.INVALID) {
                                 ZFAndroidPost.cancel(_loadTimeoutTaskId);
-                                _loadTimeoutTaskId = -1;
+                                _loadTimeoutTaskId = ZFTaskId.INVALID;
                             }
                             if (ZFAd.DEBUG) {
                                 ZFAndroidLog.p("[AdMob][splash] %s onAdFailedToLoad: %s", _adId, error);
@@ -243,7 +249,9 @@ public class ZFAdForSplash {
                                 _nativeAdLoadFlag = false;
                                 native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
                             }
-                            native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
+                            if (zfjniPointerOwnerZFAd != -1) {
+                                native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
+                            }
                         }
                     }
             );
