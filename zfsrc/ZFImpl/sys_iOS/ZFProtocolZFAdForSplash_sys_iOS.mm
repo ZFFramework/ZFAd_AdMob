@@ -28,7 +28,7 @@
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
     ZFLogTrim("[AdMob][splash] %s ad:didFailToPresentFullScreenContentWithError: %s", self._adId, errorHint);
 #endif
-    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnError(self._ad, errorHint);
+    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Fail, errorHint);
 }
 - (void)adWillPresentFullScreenContent:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
@@ -44,7 +44,7 @@
     self._nativeAdStartFlag = zffalse;
     self._nativeAdShowFlag = zffalse;
     self._ownerWindow = nil;
-    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Success);
+    ZFAdForSplashImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Success, zfnull);
 }
 - (void)adDidRecordImpression:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
@@ -97,7 +97,7 @@ public:
                           );
 #endif
                 nativeAd._nativeAdShowFlag = zffalse;
-                ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
                 return;
             }
             _update(ad);
@@ -170,15 +170,12 @@ private:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
             ZFLogTrim("%s", errorHint);
 #endif
-            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
             return;
         }
 
-        if(nativeAd.impl == nil) {
+        if(nativeAd.impl == nil && nativeAd._loadTimeoutTaskId == zfnull) {
             zfobj<v_zfint> taskId(zfmRand());
-            if(nativeAd._loadTimeoutTaskId) {
-                nativeAd._loadTimeoutTaskId->stop();
-            }
             ZFLISTENER_2(onTimeout
                     , zfweakT<ZFAdForSplash>, ad
                     , zfautoT<v_zfint>, taskId
@@ -197,13 +194,13 @@ private:
                 nativeAd._nativeAdShowFlag = zffalse;
                 if(nativeAd._nativeAdLoadFlag) {
                     nativeAd._nativeAdLoadFlag = zffalse;
-                    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnLoad(ad);
+                    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnLoadStop(ad, v_ZFResultType::e_Fail, "load timeout");
                 }
                 if(ad) {
-                    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad, "load timeout");
+                    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnStop(ad, v_ZFResultType::e_Fail, "load timeout");
                 }
             } ZFLISTENER_END()
-            nativeAd._loadTimeoutTaskId = ZFTimerOnce(10000, onTimeout);
+            nativeAd._loadTimeoutTaskId = ZFTimerOnce(ad->timeout(), onTimeout);
 
             zfint taskIdRunning = taskId->zfv;
             [GADAppOpenAd loadWithAdUnitID:ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId)
@@ -222,7 +219,7 @@ private:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForSplash_DEBUG
                         ZFLogTrim("[AdMob][splash] %s onAdLoaded", nativeAd._adId);
 #endif
-                        ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
+                        ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnLoadStop(nativeAd._ad, v_ZFResultType::e_Success, zfnull);
                         _update(nativeAd._ad);
                     }
                     else {
@@ -237,10 +234,10 @@ private:
                         nativeAd._nativeAdShowFlag = zffalse;
                         if(nativeAd._nativeAdLoadFlag) {
                             nativeAd._nativeAdLoadFlag = zffalse;
-                            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
+                            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnLoadStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
                         }
                         if(nativeAd._ad) {
-                            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                            ZFAdForSplashImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
                         }
                     }
                 }];

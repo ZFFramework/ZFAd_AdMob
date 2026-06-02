@@ -38,7 +38,7 @@ public class ZFAdForSplash {
                         ZFAndroidLog.p("[AdMob][splash] %s init fail: %s", nativeAd._adId, errorHint);
                     }
                     nativeAd._nativeAdShowFlag = false;
-                    native_notifyAdOnError(nativeAd.zfjniPointerOwnerZFAd, errorHint);
+                    native_notifyAdOnStop(nativeAd.zfjniPointerOwnerZFAd, ZFResultType.e_Fail, errorHint);
                     return;
                 }
                 nativeAd._update();
@@ -64,10 +64,11 @@ public class ZFAdForSplash {
         nativeAdTmp.impl = null;
     }
 
-    public static void native_nativeAdLoad(Object nativeAd, Object window) {
+    public static void native_nativeAdLoad(Object nativeAd, Object window, long timeout) {
         ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
         nativeAdTmp._nativeAdLoadFlag = true;
         nativeAdTmp._nativeAdShowFlag = false;
+        nativeAdTmp._nativeAdLoadTimeout = timeout;
         nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp.impl = null;
         nativeAdTmp._update();
@@ -88,20 +89,19 @@ public class ZFAdForSplash {
     }
 
     // ============================================================
-    public static native void native_notifyAdOnError(long zfjniPointerOwnerZFAd, String errorHint);
-
     public static native void native_notifyAdOnDisplay(long zfjniPointerOwnerZFAd);
 
     public static native void native_notifyAdOnClick(long zfjniPointerOwnerZFAd);
 
-    public static native void native_notifyAdOnLoad(long zfjniPointerOwnerZFAd);
+    public static native void native_notifyAdOnLoadStop(long zfjniPointerOwnerZFAd, int resultType, String errorHint);
 
-    public static native void native_notifyAdOnStop(long zfjniPointerOwnerZFAd, int resultType);
+    public static native void native_notifyAdOnStop(long zfjniPointerOwnerZFAd, int resultType, String errorHint);
 
     // ============================================================
     private int _appIdUpdateTaskId = ZFTaskId.INVALID;
     private String _adId = null;
     private long _nativeAdLoadTime = 0;
+    private long _nativeAdLoadTimeout = 3000;
     private boolean _nativeAdLoadFlag = false;
     private boolean _nativeAdStartFlag = false;
     private boolean _nativeAdShowFlag = false;
@@ -117,7 +117,7 @@ public class ZFAdForSplash {
             if (zfjniPointerOwnerZFAd != -1) {
                 _nativeAdStartFlag = false;
                 _nativeAdShowFlag = false;
-                native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
+                native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Fail, error.toString());
             }
         }
 
@@ -137,7 +137,7 @@ public class ZFAdForSplash {
                 _nativeAdStartFlag = false;
                 _nativeAdShowFlag = false;
                 _ownerWindow = null;
-                native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success);
+                native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success, null);
             }
         }
 
@@ -175,15 +175,12 @@ public class ZFAdForSplash {
             if (ZFAd.DEBUG) {
                 ZFAndroidLog.p(errorHint);
             }
-            native_notifyAdOnError(zfjniPointerOwnerZFAd, errorHint);
+            native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Fail, errorHint);
             return;
         }
 
-        if (impl == null) {
+        if (impl == null && _loadTimeoutTaskId == ZFTaskId.INVALID) {
             ZFAndroidValue<Integer> taskId = new ZFAndroidValue<>((int) (Math.random() * 65536));
-            if (_loadTimeoutTaskId != ZFTaskId.INVALID) {
-                ZFAndroidPost.cancel(_loadTimeoutTaskId);
-            }
             _loadTimeoutTaskId = ZFAndroidPost.run(new Runnable() {
                 @Override
                 public void run() {
@@ -197,13 +194,13 @@ public class ZFAdForSplash {
                     _nativeAdShowFlag = false;
                     if (_nativeAdLoadFlag) {
                         _nativeAdLoadFlag = false;
-                        native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
+                        native_notifyAdOnLoadStop(zfjniPointerOwnerZFAd, ZFResultType.e_Fail, "load timeout");
                     }
                     if (zfjniPointerOwnerZFAd != -1) {
-                        native_notifyAdOnError(zfjniPointerOwnerZFAd, "load timeout");
+                        native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Fail, "load timeout");
                     }
                 }
-            }, 10000);
+            }, _nativeAdLoadTimeout);
             int taskIdRunning = taskId.value;
             AppOpenAd.load(
                     _ownerWindow.get()
@@ -225,7 +222,7 @@ public class ZFAdForSplash {
                             if (ZFAd.DEBUG) {
                                 ZFAndroidLog.p("[AdMob][splash] %s onAdLoaded", _adId);
                             }
-                            native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
+                            native_notifyAdOnLoadStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success, null);
                             _update();
                         }
 
@@ -245,12 +242,13 @@ public class ZFAdForSplash {
                             impl = null;
                             _nativeAdStartFlag = false;
                             _nativeAdShowFlag = false;
+                            String errorHint = error.toString();
                             if (_nativeAdLoadFlag) {
                                 _nativeAdLoadFlag = false;
-                                native_notifyAdOnLoad(zfjniPointerOwnerZFAd);
+                                native_notifyAdOnLoadStop(zfjniPointerOwnerZFAd, ZFResultType.e_Fail, errorHint);
                             }
                             if (zfjniPointerOwnerZFAd != -1) {
-                                native_notifyAdOnError(zfjniPointerOwnerZFAd, error.toString());
+                                native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Fail, errorHint);
                             }
                         }
                     }

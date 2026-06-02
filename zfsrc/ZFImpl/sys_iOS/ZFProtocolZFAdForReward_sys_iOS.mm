@@ -28,7 +28,7 @@
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
     ZFLogTrim("[AdMob][reward] %s ad:didFailToPresentFullScreenContentWithError: %s", self._adId, errorHint);
 #endif
-    ZFAdForRewardImpl::implForAd(self._ad)->notifyAdOnError(self._ad, errorHint);
+    ZFAdForRewardImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Fail, errorHint);
 }
 - (void)adWillPresentFullScreenContent:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
@@ -44,7 +44,7 @@
     self._nativeAdStartFlag = zffalse;
     self._nativeAdShowFlag = zffalse;
     self._ownerWindow = nil;
-    ZFAdForRewardImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Success);
+    ZFAdForRewardImpl::implForAd(self._ad)->notifyAdOnStop(self._ad, v_ZFResultType::e_Success, zfnull);
 }
 - (void)adDidRecordImpression:(id<GADFullScreenPresentingAd>)ad {
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
@@ -97,7 +97,7 @@ public:
                           );
 #endif
                 nativeAd._nativeAdShowFlag = zffalse;
-                ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
                 return;
             }
             _update(ad);
@@ -170,15 +170,12 @@ private:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
             ZFLogTrim("%s", errorHint);
 #endif
-            ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+            ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
             return;
         }
 
-        if(nativeAd.impl == nil) {
+        if(nativeAd.impl == nil && nativeAd._loadTimeoutTaskId == zfnull) {
             zfobj<v_zfint> taskId(zfmRand());
-            if(nativeAd._loadTimeoutTaskId) {
-                nativeAd._loadTimeoutTaskId->stop();
-            }
             ZFLISTENER_2(onTimeout
                     , zfweakT<ZFAdForReward>, ad
                     , zfautoT<v_zfint>, taskId
@@ -197,11 +194,13 @@ private:
                 nativeAd._nativeAdShowFlag = zffalse;
                 if(nativeAd._nativeAdLoadFlag) {
                     nativeAd._nativeAdLoadFlag = zffalse;
-                    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnLoad(ad);
+                    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnLoadStop(ad, v_ZFResultType::e_Fail, "load timeout");
                 }
-                ZFAdForRewardImpl::implForAd(ad)->notifyAdOnError(ad, "load timeout");
+                if(ad) {
+                    ZFAdForRewardImpl::implForAd(ad)->notifyAdOnStop(ad, v_ZFResultType::e_Fail, "load timeout");
+                }
             } ZFLISTENER_END()
-            nativeAd._loadTimeoutTaskId = ZFTimerOnce(10000, onTimeout);
+            nativeAd._loadTimeoutTaskId = ZFTimerOnce(ad->timeout(), onTimeout);
 
             zfint taskIdRunning = taskId->zfv;
             [GADRewardedAd loadWithAdUnitID:ZFImpl_sys_iOS_zfstringToNSString(nativeAd._adId)
@@ -220,7 +219,7 @@ private:
 #if _ZFP_ZFImpl_sys_iOS_ZFAdForReward_DEBUG
                         ZFLogTrim("[AdMob][reward] %s onAdLoaded", nativeAd._adId);
 #endif
-                        ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
+                        ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnLoadStop(nativeAd._ad, v_ZFResultType::e_Success, zfnull);
                         _update(nativeAd._ad);
                     }
                     else {
@@ -235,9 +234,11 @@ private:
                         nativeAd._nativeAdShowFlag = zffalse;
                         if(nativeAd._nativeAdLoadFlag) {
                             nativeAd._nativeAdLoadFlag = zffalse;
-                            ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnLoad(nativeAd._ad);
+                            ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnLoadStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
                         }
-                        ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnError(nativeAd._ad, errorHint);
+                        if(nativeAd._ad) {
+                            ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Fail, errorHint);
+                        }
                     }
                 }];
         }
@@ -250,7 +251,7 @@ private:
                 ZFLogTrim("[AdMob][reward] %s onAdGotReward", nativeAd._adId);
 #endif
                 nativeAd._nativeAdShowFlag = zffalse;
-                ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Success);
+                ZFAdForRewardImpl::implForAd(nativeAd._ad)->notifyAdOnStop(nativeAd._ad, v_ZFResultType::e_Success, zfnull);
             }];
         }
     }

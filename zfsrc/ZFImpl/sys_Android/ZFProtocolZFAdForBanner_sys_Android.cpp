@@ -103,19 +103,6 @@ ZFOBJECT_REGISTER(ZFAdForBannerImpl_AdMob)
 ZF_NAMESPACE_GLOBAL_END
 
 // ============================================================
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForBanner
-        , void, native_1notifyAdOnError
-        , JNIPointer zfjniPointerOwnerZFAd
-        , jstring errorHint
-        ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForBanner_DEBUG
-    ZFLogTrim("%s onError: %s", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd), ZFImpl_sys_Android_zfstringFromString(errorHint));
-#endif
-    ZFAdForBanner *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForBannerImpl::implForAd(ad)->notifyAdOnError(ad
-            , ZFImpl_sys_Android_zfstringFromString(errorHint)
-            );
-}
 JNI_METHOD_DECLARE_END()
 
 JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForBanner

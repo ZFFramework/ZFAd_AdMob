@@ -122,11 +122,11 @@ public class ZFAdForBanner extends FrameLayout {
     }
 
     // ============================================================
-    public static native void native_notifyAdOnError(long zfjniPointerOwnerZFAd, String errorHint);
-
     public static native void native_notifyAdOnDisplay(long zfjniPointerOwnerZFAd);
 
     public static native void native_notifyAdOnClick(long zfjniPointerOwnerZFAd);
+
+    public static native void native_notifyAdOnError(long zfjniPointerOwnerZFAd, String errorHint);
 
     public static native void native_notifyAdOnClose(long zfjniPointerOwnerZFAd);
 

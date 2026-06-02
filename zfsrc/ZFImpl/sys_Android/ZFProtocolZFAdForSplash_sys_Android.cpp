@@ -64,10 +64,12 @@ public:
             JNIGetMethodSig(JNIType::S_void(), JNIParamTypeContainer()
                 .add(JNIType::S_object_Object())
                 .add(JNIType::S_object_Object())
+                .add(JNIType::S_long())
             ).c_str());
         JNIUtilCallStaticVoidMethod(jniEnv, ZFImpl_sys_Android_jclassZFAdForSplash(), jmId
                 , (jobject)ad->nativeAd()
                 , (jobject)ad->window()->nativeWindow()
+                , (jlong)ad->timeout()
                 );
     }
     zfoverride
@@ -102,21 +104,6 @@ ZF_NAMESPACE_GLOBAL_END
 
 // ============================================================
 JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
-        , void, native_1notifyAdOnError
-        , JNIPointer zfjniPointerOwnerZFAd
-        , jstring errorHint
-        ) {
-#if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
-    ZFLogTrim("%s onError: %s", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd), ZFImpl_sys_Android_zfstringFromString(errorHint));
-#endif
-    ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnError(ad
-            , ZFImpl_sys_Android_zfstringFromString(errorHint)
-            );
-}
-JNI_METHOD_DECLARE_END()
-
-JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
         , void, native_1notifyAdOnDisplay
         , JNIPointer zfjniPointerOwnerZFAd
         ) {
@@ -141,14 +128,20 @@ JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
 JNI_METHOD_DECLARE_END()
 
 JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
-        , void, native_1notifyAdOnLoad
+        , void, native_1notifyAdOnLoadStop
         , JNIPointer zfjniPointerOwnerZFAd
+        , jint resultType
+        , jstring errorHint
         ) {
 #if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
     ZFLogTrim("%s onLoad", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd));
 #endif
     ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
-    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnLoad(ad);
+    ZFAdForSplashImpl::implForAd(ad)->notifyAdOnLoadStop(
+            ad
+            , (ZFResultType)resultType
+            , ZFImpl_sys_Android_zfstringFromString(errorHint)
+            );
 }
 JNI_METHOD_DECLARE_END()
 
@@ -156,6 +149,7 @@ JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
         , void, native_1notifyAdOnStop
         , JNIPointer zfjniPointerOwnerZFAd
         , jint resultType
+        , jstring errorHint
         ) {
 #if _ZFP_ZFImpl_sys_Android_ZFAdForSplash_DEBUG
     ZFLogTrim("%s onStop", JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd), (ZFResultType)resultType);
@@ -163,6 +157,7 @@ JNI_METHOD_DECLARE_BEGIN(ZFImpl_sys_Android_JNI_ID_ZFAdForSplash
     ZFAdForSplash *ad = JNIConvertZFObjectFromJNIType(jniEnv, zfjniPointerOwnerZFAd);
     ZFAdForSplashImpl::implForAd(ad)->notifyAdOnStop(ad
             , (ZFResultType)resultType
+            , ZFImpl_sys_Android_zfstringFromString(errorHint)
             );
 }
 JNI_METHOD_DECLARE_END()
