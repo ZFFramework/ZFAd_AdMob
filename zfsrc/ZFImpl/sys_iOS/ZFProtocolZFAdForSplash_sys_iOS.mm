@@ -16,6 +16,7 @@
 @property (nonatomic, assign) zfbool _nativeAdLoadFlag;
 @property (nonatomic, assign) zfbool _nativeAdStartFlag;
 @property (nonatomic, assign) zfbool _nativeAdShowFlag;
+@property (nonatomic, assign) zfbool _nativeAdHasShowFlag;
 @property (nonatomic, weak) UIViewController *_ownerWindow;
 @property (nonatomic, assign) zfautoT<ZFTaskId> _loadTimeoutTaskId;
 @end
@@ -130,6 +131,7 @@ public:
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         nativeAd._nativeAdLoadFlag = zftrue;
         nativeAd._nativeAdShowFlag = zftrue;
+        nativeAd._nativeAdHasShowFlag = zffalse;
         nativeAd._ownerWindow = (__bridge UIViewController *)ad->window()->nativeWindow();
         nativeAd.impl.fullScreenContentDelegate = nil;
         nativeAd.impl = nil;
@@ -139,6 +141,7 @@ public:
     virtual zfbool nativeAdLoaded(ZF_IN ZFAdForSplash *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         return nativeAd._nativeAdLoadTime != 0
+            && !nativeAdTmp._nativeAdHasShowFlag
             && ZFTime::currentTime() - nativeAd._nativeAdLoadTime < zftimetOneHour()
             ;
     }
@@ -147,6 +150,7 @@ public:
     virtual void nativeAdStart(ZF_IN ZFAdForSplash *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         nativeAd._nativeAdStartFlag = zftrue;
+        nativeAd._nativeAdHasShowFlag = zftrue;
         nativeAd._ownerWindow = (__bridge UIViewController *)ad->window()->nativeWindow();
         _update(ad);
     }

@@ -71,6 +71,8 @@ public class ZFAdForReward {
         ZFAdForReward nativeAdTmp = (ZFAdForReward) nativeAd;
         nativeAdTmp._nativeAdLoadFlag = true;
         nativeAdTmp._nativeAdShowFlag = false;
+        nativeAdTmp._nativeAdHasShowFlag = false;
+        nativeAdTmp._nativeAdGotRewardFlag = false;
         nativeAdTmp._nativeAdLoadTimeout = timeout;
         nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp.impl = null;
@@ -80,6 +82,7 @@ public class ZFAdForReward {
     public static boolean native_nativeAdLoaded(Object nativeAd) {
         ZFAdForReward nativeAdTmp = (ZFAdForReward) nativeAd;
         return nativeAdTmp._nativeAdLoadTime != 0
+                && !nativeAdTmp._nativeAdHasShowFlag
                 && System.currentTimeMillis() - nativeAdTmp._nativeAdLoadTime < 60 * 60 * 1000
                 ;
     }
@@ -87,6 +90,8 @@ public class ZFAdForReward {
     public static void native_nativeAdStart(Object nativeAd, Object window) {
         ZFAdForReward nativeAdTmp = (ZFAdForReward) nativeAd;
         nativeAdTmp._nativeAdStartFlag = true;
+        nativeAdTmp._nativeAdHasShowFlag = true;
+        nativeAdTmp._nativeAdGotRewardFlag = false;
         nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp._update();
     }
@@ -108,6 +113,8 @@ public class ZFAdForReward {
     private boolean _nativeAdLoadFlag = false;
     private boolean _nativeAdStartFlag = false;
     private boolean _nativeAdShowFlag = false;
+    private boolean _nativeAdHasShowFlag = false;
+    private boolean _nativeAdGotRewardFlag = false;
     private WeakReference<Activity> _ownerWindow = null;
     private int _loadTimeoutTaskId = ZFTaskId.INVALID;
 
@@ -140,7 +147,7 @@ public class ZFAdForReward {
                 _nativeAdStartFlag = false;
                 _nativeAdShowFlag = false;
                 _ownerWindow = null;
-                native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success, null);
+                native_notifyAdOnStop(zfjniPointerOwnerZFAd, _nativeAdGotRewardFlag ? ZFResultType.e_Success : ZFResultType.e_Cancel, null);
             }
         }
 
@@ -265,8 +272,7 @@ public class ZFAdForReward {
                     if (ZFAd.DEBUG) {
                         ZFAndroidLog.p("[AdMob][reward] %s onAdGotReward", _adId);
                     }
-                    _nativeAdShowFlag = false;
-                    native_notifyAdOnStop(zfjniPointerOwnerZFAd, ZFResultType.e_Success, null);
+                    _nativeAdGotRewardFlag = true;
                 }
             });
             _ownerWindow.get().overridePendingTransition(

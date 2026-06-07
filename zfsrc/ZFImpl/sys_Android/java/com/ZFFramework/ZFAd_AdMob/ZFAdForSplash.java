@@ -68,6 +68,7 @@ public class ZFAdForSplash {
         ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
         nativeAdTmp._nativeAdLoadFlag = true;
         nativeAdTmp._nativeAdShowFlag = false;
+        nativeAdTmp._nativeAdHasShowFlag = false;
         nativeAdTmp._nativeAdLoadTimeout = timeout;
         nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp.impl = null;
@@ -77,6 +78,7 @@ public class ZFAdForSplash {
     public static boolean native_nativeAdLoaded(Object nativeAd) {
         ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
         return nativeAdTmp._nativeAdLoadTime != 0
+                && !nativeAdTmp._nativeAdHasShowFlag
                 && System.currentTimeMillis() - nativeAdTmp._nativeAdLoadTime < 60 * 60 * 1000
                 ;
     }
@@ -84,6 +86,7 @@ public class ZFAdForSplash {
     public static void native_nativeAdStart(Object nativeAd, Object window) {
         ZFAdForSplash nativeAdTmp = (ZFAdForSplash) nativeAd;
         nativeAdTmp._nativeAdStartFlag = true;
+        nativeAdTmp._nativeAdHasShowFlag = true;
         nativeAdTmp._ownerWindow = new WeakReference<>((Activity) window);
         nativeAdTmp._update();
     }
@@ -105,6 +108,7 @@ public class ZFAdForSplash {
     private boolean _nativeAdLoadFlag = false;
     private boolean _nativeAdStartFlag = false;
     private boolean _nativeAdShowFlag = false;
+    private boolean _nativeAdHasShowFlag = false;
     private WeakReference<Activity> _ownerWindow = null;
     private int _loadTimeoutTaskId = ZFTaskId.INVALID;
 
