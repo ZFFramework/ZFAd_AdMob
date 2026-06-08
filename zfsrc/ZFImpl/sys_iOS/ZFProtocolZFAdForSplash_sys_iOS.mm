@@ -130,7 +130,7 @@ public:
     virtual void nativeAdLoad(ZF_IN ZFAdForSplash *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForSplash *)ad->nativeAd();
         nativeAd._nativeAdLoadFlag = zftrue;
-        nativeAd._nativeAdShowFlag = zftrue;
+        nativeAd._nativeAdShowFlag = zffalse;
         nativeAd._nativeAdHasShowFlag = zffalse;
         nativeAd._ownerWindow = (__bridge UIViewController *)ad->window()->nativeWindow();
         nativeAd.impl.fullScreenContentDelegate = nil;
