@@ -143,7 +143,7 @@ public:
     virtual zfbool nativeAdLoaded(ZF_IN ZFAdForReward *ad) {
         _ZFP_ZFImpl_sys_iOS_ZFAdForReward *nativeAd = (__bridge _ZFP_ZFImpl_sys_iOS_ZFAdForReward *)ad->nativeAd();
         return nativeAd._nativeAdLoadTime != 0
-            && !nativeAdTmp._nativeAdHasShowFlag
+            && !nativeAd._nativeAdHasShowFlag
             && ZFTime::currentTime() - nativeAd._nativeAdLoadTime < zftimetOneHour()
             ;
     }
